@@ -31,9 +31,8 @@ export class Game{
         from: string,
         to: string
     }){
-        if(this.board.move.length%2 === 0 && socket !== this.player1)return;
-        if(this.board.move.length%2 === 1 && socket !== this.player2)return;
-
+        if(this.board.turn() === 'w' && socket !== this.player1) return ;
+        if(this.board.turn() ==='b' && socket !== this.player2) return;
         try{
             this.board.move(move);
             this.moveCount++;
