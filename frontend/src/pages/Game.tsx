@@ -3,21 +3,21 @@ import { Button } from "../components/Button"
 import ChessBoard from "../components/ChessBoard"
 import { GAME_OVER, INIT_GAME, MOVE, useSocket } from "../hooks/useSocket"
 import { Chess } from "chess.js";
-
 export const Game = () => {
   const socket=useSocket();
   const [chess,setChess]=useState<Chess>(new Chess());
   const [board,setBoard]=useState(chess?.board());//board is a 2D array
   const [isStarted,setIsStarted]=useState(false);
+  const [color,setColor]=useState('');
   useEffect(()=>{
     if(!socket) return;
     socket.onmessage=(event)=>{
       const message=JSON.parse(event.data);
       switch (message.type){
         case INIT_GAME:
-          setChess(new Chess());
           setBoard(chess?.board());
           setIsStarted(true);
+          setColor(message.payload.color);
           console.log("Game initialized");
           break;
         case MOVE:
@@ -33,7 +33,7 @@ export const Game = () => {
       }
     }
   },[socket]);
-
+  
   if(!socket) return <div>Loading...</div>
 
   return (
@@ -46,6 +46,7 @@ export const Game = () => {
           {
             isStarted?(
               <div className="flex ">
+                <h1 className="text-white text-lg">You are {color}</h1>
               </div>
             ):(
               <div className="mt-3 justify-center">

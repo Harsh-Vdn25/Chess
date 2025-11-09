@@ -1,7 +1,7 @@
-import type { Color, PieceSymbol, Square } from "chess.js";
+import {  type Color, type PieceSymbol, type Square } from "chess.js";
 import { useState } from "react";
 import { MOVE } from "../hooks/useSocket";
-
+import { chessIconPaths } from "../lib/utils";
 interface BoardType {
   square: Square;
   type: PieceSymbol;
@@ -43,8 +43,8 @@ export default function ChessBoard({
                         setFrom(null);
                       }
                     }}
-                    className={`w-10 h-10 px-2 py-1 flex justify-center items-center cursor-pointer ${(i+j)%2 === 0 ? 'bg-green-500' : 'bg-white'}`}>
-                        {square ? square.type : ''}
+                    className={`w-10 h-10 px-2 py-1 flex justify-center items-center cursor-pointer ${(i+j)%2 === 0 ? 'bg-green-500' : 'bg-green-100'}`}>
+                        {square ? <img src={chessIconPaths[square.type]} className={`w-10 h-7 ${square.color==='b'?'':'invert'}`}/> : ''}
                     </div>
                 })
                 }
