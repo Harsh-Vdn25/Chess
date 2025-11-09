@@ -52,11 +52,12 @@ export class Game{
             }
         }
         //update the winner in the database
-        const receiver = this.board.turn() === "w" ? this.player1 : this.player2;
-        receiver.send(JSON.stringify({
-            type: MOVE,
-            payload: move 
-        }))
+        for(const p of [this.player1,this.player2]){
+            p.send(JSON.stringify({
+                type: MOVE,
+                payload: move 
+            }))
+        }
     }
         destroy(){
             this.player1.close();
