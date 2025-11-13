@@ -1,5 +1,5 @@
 {
-  "name": "latest",
+  "name": "Chess",
   "private": true,
   "scripts": {
     "build": "turbo run build",
