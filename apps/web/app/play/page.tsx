@@ -3,14 +3,15 @@ import { Button } from "@repo/ui/button";
 import ChessBoard from "../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import {INIT_GAME,MOVE} from '@repo/common/config'
+import {ERROR, INIT_GAME,MOVE} from '@repo/common/config'
 import Chess from "@repo/common/chess";
 
 export default function Play(){
+    const [chess,setChess]=useState<Chess>(new Chess());
+    const [board,setBoard]=useState(chess.board());
     const [isStarted,setStarted]=useState(false);
     const [color,setColor]=useState("");
     const [socket,setSocket]=useState<WebSocket|null>(null);
-    const [board,setBoard]=useState<Chess>(new Chess());
     useEffect(()=>{
         if(socket)return;
         useSocket({socket,setSocket});
@@ -29,30 +30,39 @@ export default function Play(){
                     setColor(message.color);
                     break;
                 case MOVE:
-                    
+                    const move = message.payload.move;
+                    chess.move(move);
+                    setBoard(chess.board);
+                    break;
+                case ERROR:
+                    alert(message.payload.message)
+                    break;
             }
         }
         return ()=>{
             socket?.close();
         }
     },[socket])
-    function sendMessage(){
+    function initGame(){
         if(!socket)return;
         socket.send(JSON.stringify({
             type:INIT_GAME
         }))
     }
+
+    if(!socket) return <div>Loading...</div>
+    
     return (
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
             <div className="flex">
-                <ChessBoard/>
+                <ChessBoard board={board} socket={socket}/>
                 {
                     isStarted?(
                         <div className="bg-gray-700">
-                            <h1 className="text-white">Moves</h1>
+                            <h1 className="text-white">Your pieces are {color}</h1>
                         </div>
                     ):(
-                        <Button children="Play" onClick={()=>sendMessage}/>
+                        <Button children="Play" onClick={()=>initGame()}/>
                     )
                 }
             </div>
