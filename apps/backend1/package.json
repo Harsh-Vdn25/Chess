@@ -17,7 +17,6 @@
   "dependencies": {
     "@repo/common":"workspace:*",
     "@types/ws": "^8.18.1",
-    "chess.js": "^1.4.0",
     "ws": "^8.18.3"
   }
 }
