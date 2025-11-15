@@ -23,7 +23,8 @@ export default function Play(){
     useEffect(()=>{
         if(!socket)return;
         socket.onmessage=(data :any)=>{
-            const message=JSON.parse(data);
+            const msgData=data.data;
+            const message=JSON.parse(msgData);
             switch(message.type){
                 case INIT_GAME:
                     setStarted(true);
@@ -43,6 +44,7 @@ export default function Play(){
             socket?.close();
         }
     },[socket])
+
     function initGame(){
         if(!socket)return;
         socket.send(JSON.stringify({
@@ -62,7 +64,9 @@ export default function Play(){
                             <h1 className="text-white">Your pieces are {color}</h1>
                         </div>
                     ):(
-                        <Button children="Play" onClick={()=>initGame()}/>
+                        <div>
+                            <Button children="Play"  onClick={()=>initGame()}/>
+                        </div>
                     )
                 }
             </div>

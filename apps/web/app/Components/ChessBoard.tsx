@@ -1,4 +1,5 @@
 import { Square,PieceSymbol,Color } from "@repo/common/chess";
+import { ChessPieces } from "../config/config";
 
 export default function ChessBoard({socket,board}:{
     socket:WebSocket,
@@ -14,8 +15,16 @@ export default function ChessBoard({socket,board}:{
                 return <div className="flex"> 
                     {
                         Square.map((Box,j)=>{
-                            return <div className={`w-8 h-8 border-1 border-gray-500 ${j%2 === 0 ? "bg-green-500":"bg-green-100"} text-black`}
-                            >{Box?.type}</div>
+                            return <div className={`w-8 h-8 shadow-black flex justify-center items-center  cursor-pointer ${(i+j)%2 === 0 ? "bg-green-500":"bg-green-200"} text-black`}
+                            >
+                                {
+                                    Box?.type&&(
+                                        <img src={ChessPieces[Box?.type]?.src}
+                                            alt={Box?.type}
+                                            className={`w-8 h-8 ${Box?.color==='b'?"invert" :""}`} />
+                                    )
+                                }
+                            </div>
                         })
                     }
                 </div>

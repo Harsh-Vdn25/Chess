@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image";
 import { useRouter } from "next/navigation"
 import Chessboard from './assets/chessboard1.jpeg'
 import { Button } from "../../../packages/ui/src/button";

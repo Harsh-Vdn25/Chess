@@ -4,14 +4,13 @@ import { ReactNode } from "react";
 
 interface ButtonProps {
   children: ReactNode;
-  className?: string;
   onClick:()=>void;
 }
 
-export const Button = ({ children, className, onClick }: ButtonProps) => {
+export const Button = ({ children, onClick }: ButtonProps) => {
   return (
       <button
-        className={`bg-green-500 p-2 text-white shadow-black hover:bg-green-700 rounded-lg cursor-pointer ${className}`}
+        className="p-2 bg-green-500 text-white shadow-black hover:bg-green-700 cursor-pointer rounded-md "
         onClick={onClick}>
         {children}
       </button>
