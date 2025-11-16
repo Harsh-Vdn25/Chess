@@ -3,7 +3,7 @@ import { Button } from "@repo/ui/button";
 import ChessBoard from "../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import {ERROR, INIT_GAME,MOVE} from '@repo/common/config'
+import {ERROR, GAME_OVER, INIT_GAME,MOVE} from '@repo/common/config'
 import Chess from "@repo/common/chess";
 
 export default function Play(){
@@ -12,6 +12,8 @@ export default function Play(){
     const [isStarted,setStarted]=useState(false);
     const [color,setColor]=useState("");
     const [socket,setSocket]=useState<WebSocket|null>(null);
+    const [isGameOver,setIsGameOver]=useState(false);
+    const [colorWon,setColorWon]=useState('');
     useEffect(()=>{
         if(socket)return;
         useSocket({socket,setSocket});
@@ -25,15 +27,25 @@ export default function Play(){
         socket.onmessage=(data :any)=>{
             const msgData=data.data;
             const message=JSON.parse(msgData);
+            let move;
             switch(message.type){
                 case INIT_GAME:
                     setStarted(true);
                     setColor(message.color);
                     break;
                 case MOVE:
-                    const move = message.payload.move;
+                    move = message.payload.move;
                     chess.move(move);
-                    setBoard(chess.board);
+                    setBoard(chess.board());
+                    break;
+                case GAME_OVER:
+                    move = message.payload.move;
+                    const Winner = message.payload.winner;
+                    chess.move(move);
+                    setBoard(chess.board());
+                    setIsGameOver(true);
+                    setColorWon(Winner);
+                    alert(Winner);
                     break;
                 case ERROR:
                     alert(message.payload.message)
@@ -58,17 +70,23 @@ export default function Play(){
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
             <div className="flex">
                 <ChessBoard board={board} socket={socket}/>
+                <div className="bg-gray-700">
                 {
                     isStarted?(
-                        <div className="bg-gray-700">
+                        isGameOver?(
+                            <h1 className="text-white">{colorWon}</h1>
+                        ):(
+                            
                             <h1 className="text-white">Your pieces are {color}</h1>
-                        </div>
+
+                        )
                     ):(
                         <div>
                             <Button children="Play"  onClick={()=>initGame()}/>
                         </div>
                     )
                 }
+                </div>
             </div>
         </div>
     );

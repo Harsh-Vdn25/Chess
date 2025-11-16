@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import Chess from "@repo/common/chess";
-import { MOVE,ERROR,INIT_GAME } from "@repo/common/config";
+import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
 export class Game{
     public player1: WebSocket;
     public player2: WebSocket;
@@ -25,6 +25,7 @@ export class Game{
         from :string,
         to :string
     }){
+        if(this.chess.isCheckmate()) return;
         if((this.chess.turn()==='w' && socket===this.player2)){
             socket.send(JSON.stringify({
                 type:ERROR,
@@ -44,14 +45,28 @@ export class Game{
             return;
         }
         try{
+            let message;
             this.chess.move(move);
-            for(const p of [this.player1,this.player2]){
-                p.send(JSON.stringify({
+            if(this.chess.isCheckmate()){
+                const player=this.chess.turn() === 'b' ? this.player1 : this.player2;
+                const colorWon= player === this.player1 ? "white": "black";
+                message={
+                    type : GAME_OVER,
+                    payload:{
+                        move:move,
+                        winner:`${colorWon} Won`
+                    }
+                }
+            }else{
+                message={
                     type:MOVE,
                     payload:{
                         move:move
                     }
-                }))
+                }
+            }
+            for(const p of [this.player1,this.player2]){
+                p.send(JSON.stringify(message));
             }
         }catch(err){
             console.log(err);
