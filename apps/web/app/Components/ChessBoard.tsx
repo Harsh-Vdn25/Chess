@@ -24,9 +24,10 @@ export default function ChessBoard({socket,board}:{
                             return <div className={`w-8 h-8 shadow-black flex justify-center items-center  cursor-pointer ${(i+j)%2 === 0 ? "bg-green-500":"bg-green-200"} text-black`}
                             key={j}
                             onClick={()=>{
-                                if(!from){
+                                if(!from && Box?.type){
                                     setFrom(squarePosition);
-                                }else{
+                                }
+                                if(from && !Box?.type){
                                     const to=squarePosition;
                                     socket.send(JSON.stringify({
                                         type:MOVE,

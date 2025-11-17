@@ -25,7 +25,11 @@ export class Game{
         from :string,
         to :string
     }){
-        if(this.chess.isCheckmate()) return;
+        if(this.chess.isCheckmate()){
+            socket.send(JSON.stringify({
+                type:GAME_OVER
+            }))
+        };
         if((this.chess.turn()==='w' && socket===this.player2)){
             socket.send(JSON.stringify({
                 type:ERROR,
