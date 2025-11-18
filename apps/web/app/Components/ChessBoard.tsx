@@ -20,15 +20,18 @@ export default function ChessBoard({socket,board}:{
                     {
                         Square.map((Box,j)=>{
                             const squarePosition = String.fromCharCode(65+j).toLowerCase()  + (8-i).toString();
-                            console.log(squarePosition)
                             return <div className={`w-8 h-8 shadow-black flex justify-center items-center  cursor-pointer ${(i+j)%2 === 0 ? "bg-green-500":"bg-green-200"} text-black`}
                             key={j}
                             onClick={()=>{
                                 if(!from && Box?.type){
                                     setFrom(squarePosition);
                                 }
-                                if(from && !Box?.type){
+                                if(from ){
                                     const to=squarePosition;
+                                    if(from === to){
+                                        setFrom('');
+                                        return;
+                                    }
                                     socket.send(JSON.stringify({
                                         type:MOVE,
                                         payload:{

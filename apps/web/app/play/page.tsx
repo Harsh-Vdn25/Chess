@@ -31,7 +31,7 @@ export default function Play(){
             switch(message.type){
                 case INIT_GAME:
                     setStarted(true);
-                    setColor(message.color);
+                    setColor(message.payload.color);
                     break;
                 case MOVE:
                     move = message.payload.move;
@@ -80,9 +80,7 @@ export default function Play(){
                         isGameOver?(
                             <h1 className="text-white">{colorWon}</h1>
                         ):(
-                            
                             <h1 className="text-white">Your pieces are {color}</h1>
-
                         )
                     ):(
                         <div>

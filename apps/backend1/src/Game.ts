@@ -1,6 +1,7 @@
 import WebSocket from "ws";
-import Chess from "@repo/common/chess";
+import Chess, { WHITE } from "@repo/common/chess";
 import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
+import { checkMove, sendMessage } from "./helpers/helper";
 export class Game{
     public player1: WebSocket;
     public player2: WebSocket;
@@ -12,15 +13,17 @@ export class Game{
         this.initGame();
     }
     initGame(){
-        this.player1.send(JSON.stringify({
+        for(const {socket,color} of [
+            {socket:this.player1,color:"white" as const},
+            {socket:this.player2,color:"black" as const}
+        ]){
+        sendMessage({
             type:INIT_GAME,
-            color:"white"
-        }))
-        this.player2.send(JSON.stringify({
-            type:INIT_GAME,
-            color:"black"
-        }))
+            payload:{color:color}
+        },socket)
     }
+    }
+    
     makeMove(socket: WebSocket,move : {
         from :string,
         to :string
@@ -31,25 +34,30 @@ export class Game{
             }))
         };
         if((this.chess.turn()==='w' && socket===this.player2)){
-            socket.send(JSON.stringify({
+            sendMessage({
                 type:ERROR,
-                payload:{
-                    message:"Its whites turn"
-                }
-            }))
+                payload:{message:"Its whites turn"}
+            },socket);
             return;
         };
         if(this.chess.turn()==='b' &&socket=== this.player1){
-            socket.send(JSON.stringify({
+            sendMessage({
                 type: ERROR,
                 payload:{
                     message:"Its blacks turn"
                 }
-            }))
+            },socket);
             return;
         }
         try{
             let message;
+            if(!checkMove(move.from) && !checkMove(move.to)){
+                sendMessage({
+                    type:ERROR,
+                    payload:{message:"Invalid move"}
+                },socket);
+                return;
+            }
             this.chess.move(move);
             if(this.chess.isCheckmate()){
                 const player=this.chess.turn() === 'b' ? this.player1 : this.player2;
