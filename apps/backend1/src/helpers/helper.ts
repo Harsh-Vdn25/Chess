@@ -11,7 +11,7 @@ export interface messageType{
 }
 
 export function checkMove(a:string){
-    const allowedRegex = /^[a-z0-9]+$/;
+    const allowedRegex = /^[a-z][1-8]+$/;
     return allowedRegex.test(a);
 }
 

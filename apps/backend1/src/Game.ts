@@ -60,8 +60,7 @@ export class Game{
             }
             this.chess.move(move);
             if(this.chess.isCheckmate()){
-                const player=this.chess.turn() === 'b' ? this.player1 : this.player2;
-                const colorWon= player === this.player1 ? "white": "black";
+                const colorWon=this.chess.turn() === 'b' ? "white" : "black"; 
                 message={
                     type : GAME_OVER,
                     payload:{
