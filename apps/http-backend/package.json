@@ -15,8 +15,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@repo/db":"workspace:*",
+    "@repo/db": "workspace:*",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5",
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0"
   }
 }

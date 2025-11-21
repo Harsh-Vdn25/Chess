@@ -6,8 +6,6 @@
     "./client":"./src/config.ts"
   },
   "scripts": {
-    "build": "tsc -b",
-    "dev": "npm run build && node dist/db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
