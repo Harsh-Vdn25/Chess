@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "exports":{
-    "./client":"./src/config.ts"
+    "./client":"./dist/config.js"
   },
   "scripts": {
+    "build":"tsc -b",
+    "dev":"npm run build && node dist/config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",

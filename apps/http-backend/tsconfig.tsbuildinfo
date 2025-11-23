@@ -1,0 +1,1 @@
+{"root":["./src/server.ts","./src/controllers/usercontroller.ts","./src/helpers/hashpassword.ts","./src/routes/userroute.ts"],"version":"5.9.2"}
