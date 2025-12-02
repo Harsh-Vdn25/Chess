@@ -6,7 +6,6 @@ async function main(){
     const redisClient = await connectToRedis();
     const gamemanager = new GameManager(redisClient);
     wss.on('connection',(socket)=>{
-        gamemanager.addUser(socket);
         gamemanager.handleMessage(socket);
         socket.on('close',()=>gamemanager.removeUser(socket));
     })

@@ -4,20 +4,32 @@ import {INIT_GAME, MOVE} from '@repo/common/config';
 import { clientType } from './redis/redisClient';
 import { prisma } from '@repo/db/client';
 import { decodeToken } from '@repo/backend-common/index';
+
+interface usersGame{
+    player1:number;
+    player2:number;
+    gameId:string;
+}
+interface usersType{
+    socket:WebSocket;
+    userId:String;
+}
 export class GameManager{
     private games: Game[];
     private pendingUser: WebSocket|null;
-    private users: WebSocket[];
-    private userId1:String | undefined;
+    private users: usersType[];
+    private userGame:usersGame[];
+    private player1:number =-1;
     public redisClient:clientType;
     constructor(redisClient:clientType){
         this.games = [];
         this.users = [];
+        this.userGame = [];
         this.pendingUser = null;
         this.redisClient = redisClient;
     }
-    addUser(socket:WebSocket){
-        this.users.push(socket);
+    addUser({socket,userId}:usersType){
+        this.users.push({socket,userId});
     }
     async handleMessage(socket:WebSocket){
         socket.on('message',async (data : any)=>{
@@ -26,16 +38,28 @@ export class GameManager{
             if(message.type === INIT_GAME){
                  const token = message.token;
                  const userId = await decodeToken(token);
+                 this.addUser({socket,userId});
                  if(this.pendingUser === null){
                     this.pendingUser = socket;
-                    this.userId1 = userId;
+                    this.player1 = userId;
                  }else{
-                    const saveGame = await prisma.game.create({
-                        data:{
-                            userId1:this.userId1,
-                            userId2:userId
-                        }
-                    })
+                    try{
+                        const saveGame = await prisma.game.create({
+                            data:{
+                                userId1:this.player1,
+                                userId2:userId
+                            }
+                        })
+                        this.userGame.push({
+                            player1:this.player1,
+                            player2:saveGame.userId2,
+                            gameId:saveGame.id
+                            });
+                    }catch(err){
+                        console.log(err);
+                        return;
+                    }
+                    this.player1=-1;
                     const game = new Game(this.pendingUser,socket);
                     this.games.push(game);
                     this.pendingUser = null;
@@ -49,6 +73,6 @@ export class GameManager{
     }
 
     removeUser(socket:WebSocket){
-        this.users.filter(x=>x !== socket);
+        this.users.filter(x=>x.socket!==socket);
     }
 }

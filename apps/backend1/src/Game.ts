@@ -1,5 +1,5 @@
 import WebSocket from "ws";
-import Chess, { WHITE } from "@repo/common/chess";
+import Chess from "@repo/common/chess";
 import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
 import { checkMove, sendMessage } from "./helpers/helper";
 export class Game{
