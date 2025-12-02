@@ -11,11 +11,9 @@ export async function Signup(req:Request,res:Response){
         await prisma.user.create({
             data:{
                 username:username,
-                password:hashedPassword,
-                firstName:firstName
+                password:hashedPassword
             }
         })
-        console.log('jell0')
         return res.status(200).json({message:"successfully signed up"});
     }catch(err){
         console.log(err);

@@ -15,8 +15,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@repo/common":"workspace:*",
+    "@repo/common": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/backend-common":"workspace:*",
+    "@types/redis": "^4.0.11",
     "@types/ws": "^8.18.1",
+    "redis": "^5.10.0",
     "ws": "^8.18.3"
   }
 }
