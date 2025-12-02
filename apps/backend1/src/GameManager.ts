@@ -55,14 +55,14 @@ export class GameManager{
                             player2:saveGame.userId2,
                             gameId:saveGame.id
                             });
+                        this.player1=-1;
+                        const game = new Game(this.pendingUser,socket,this.redisClient,saveGame.id);
+                        this.games.push(game);
+                        this.pendingUser = null;
                     }catch(err){
                         console.log(err);
                         return;
                     }
-                    this.player1=-1;
-                    const game = new Game(this.pendingUser,socket);
-                    this.games.push(game);
-                    this.pendingUser = null;
                  }
             }
             if(message.type === MOVE){
