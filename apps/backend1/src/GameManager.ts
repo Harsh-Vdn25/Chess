@@ -4,32 +4,20 @@ import {INIT_GAME, MOVE} from '@repo/common/config';
 import { clientType } from './redis/redisClient';
 import { prisma } from '@repo/db/client';
 import { decodeToken } from '@repo/backend-common/index';
+import { userGame,users,type usersType} from './helpers/state';
 
-interface usersGame{
-    player1:number;
-    player2:number;
-    gameId:string;
-}
-interface usersType{
-    socket:WebSocket;
-    userId:String;
-}
 export class GameManager{
     private games: Game[];
     private pendingUser: WebSocket|null;
-    private users: usersType[];
-    private userGame:usersGame[];
     private player1:number =-1;
     public redisClient:clientType;
     constructor(redisClient:clientType){
         this.games = [];
-        this.users = [];
-        this.userGame = [];
         this.pendingUser = null;
         this.redisClient = redisClient;
     }
     addUser({socket,userId}:usersType){
-        this.users.push({socket,userId});
+        users.push({socket,userId});
     }
     async handleMessage(socket:WebSocket){
         socket.on('message',async (data : any)=>{
@@ -50,7 +38,7 @@ export class GameManager{
                                 userId2:userId
                             }
                         })
-                        this.userGame.push({
+                        userGame.push({
                             player1:this.player1,
                             player2:saveGame.userId2,
                             gameId:saveGame.id
@@ -73,6 +61,6 @@ export class GameManager{
     }
 
     removeUser(socket:WebSocket){
-        this.users.filter(x=>x.socket!==socket);
+        users.filter(x=>x.socket!==socket);
     }
 }

@@ -16,6 +16,7 @@
   "description": "",
   "dependencies": {
     "@repo/db": "workspace:*",
+    "@repo/backend-common":"workspace:*",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.5",
     "bcrypt": "^6.0.0",

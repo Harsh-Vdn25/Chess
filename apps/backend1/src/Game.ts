@@ -6,7 +6,7 @@ import { clientType } from "./redis/redisClient";
 export class Game{
     public player1: WebSocket;
     public player2: WebSocket;
-    private gameId: String;
+    private gameId: string;
     private chess: Chess;
     private redisClient : clientType;
     constructor(player1:WebSocket,player2:WebSocket,redisClient:clientType,gameId:string){
@@ -24,6 +24,7 @@ export class Game{
         ]){
         sendMessage({
             type:INIT_GAME,
+            gameId:this.gameId,
             payload:{color:color}
         },socket)
     }
@@ -77,6 +78,7 @@ export class Game{
             }else{
                 message={
                     type:MOVE,
+                    gameId:this.gameId,
                     payload:{
                         move:move
                     }
@@ -85,7 +87,6 @@ export class Game{
                     "games",
                     '*',
                     {   
-                        gameId:(this.gameId) as string,
                         json:JSON.stringify({message})
                     }
                 )

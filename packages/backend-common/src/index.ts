@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-export const createToken=async(userId:string)=>{
+export const createToken=async(userId:number)=>{
     if(!userId)return;
     const token = jwt.sign({
         id:userId
