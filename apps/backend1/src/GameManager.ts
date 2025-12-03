@@ -1,10 +1,11 @@
 import WebSocket from 'ws';
 import { Game } from './Game';
-import {INIT_GAME, MOVE} from '@repo/common/config';
+import {ERROR, INIT_GAME, MOVE} from '@repo/common/config';
 import { clientType } from './redis/redisClient';
 import { prisma } from '@repo/db/client';
 import { decodeToken } from '@repo/backend-common/index';
 import { userGame,users,type usersType} from './helpers/state';
+import { sendMessage } from './helpers/helper';
 
 export class GameManager{
     private games: Game[];
@@ -31,6 +32,9 @@ export class GameManager{
                     this.pendingUser = socket;
                     this.player1 = userId;
                  }else{
+                    if(this.player1 === userId){
+                        return sendMessage({type:ERROR,payload:{message:"You cant play two games simultaneously"}},socket)
+                    }
                     try{
                         const saveGame = await prisma.game.create({
                             data:{

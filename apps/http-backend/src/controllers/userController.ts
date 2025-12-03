@@ -1,8 +1,8 @@
 import type{ Request,Response } from "express";
 import {prisma} from '@repo/db/client';
-import { hashPassword } from "../helpers/hashPassword";
+import { hashPassword,getCred } from "../helpers/helper";
 import bcrypt from 'bcrypt';
-import { createToken } from "@repo/backend-common/index";
+import { createToken, decodeToken } from "@repo/backend-common/index";
 export async function Signup(req:Request,res:Response){
     const {username,password,firstName}=req.body;
     try{
@@ -14,10 +14,10 @@ export async function Signup(req:Request,res:Response){
                 password:hashedPassword
             }
         })
-        const token = await createToken(response.id);
+        const accessToken = createToken(response.id,true,getCred("ACCESS_SECRET"));
         return res.status(200).json({
             message:"successfully signed up",
-            token:token
+            token:accessToken
         });
     }catch(err){
         console.log(err);
@@ -38,12 +38,37 @@ export async function Signin(req:Request,res:Response){
         if(!isAuthorized){
             return res.status(401).json({message:"Wrong password"});
         }
-        const token = await createToken(response.id);
+        const accessToken = await createToken(response.id,true,getCred("ACCESS_SECRET"));
+        const refreshToken = await createToken(response.id,false,getCred("REFRESH_SECRET"));
+        
+        res.cookie("refreshToken",refreshToken,{
+            httpOnly:true,
+            secure:true,
+            sameSite:"lax",
+            path:"/api/auth/refresh"
+        });
+
         return res.status(200).json({
-            message:"successfully signed up",
-            token:token
+            message:"successfully signed in",
+            token:accessToken
         });
     }catch(err){
         res.status(500).json({message:err});
+    }
+}
+
+export async function refresh(req:Request,res:Response){
+    const token = req.cookies.refreshToken;
+    if(!token) return res.status(401).json({error:"No refresh token"});
+
+    try{
+        const userId =await decodeToken(token);
+        if(!userId){
+            return res.status(401).json({error:"Invalid token"});
+        }
+        const newAccessToken = createToken(userId,true,getCred("ACCESS_SECRET"));
+        return res.json({newAccessToken:newAccessToken});
+    }catch(err){
+        return res.status(403).json({ error: "Invalid refresh token" });
     }
 }
