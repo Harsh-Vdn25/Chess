@@ -2,14 +2,24 @@
 import { useRouter } from "next/navigation"
 import Chessboard from './assets/chessboard1.jpeg'
 import { Button } from "../../../packages/ui/src/button";
+import { useEffect } from "react";
+import { refreshToken } from "./helper/api";
 export default function MainPage(){
   const router=useRouter();
+  useEffect(()=>{
+    const saved = localStorage.getItem("Token");
+    //@ts-ignore
+    if(saved)window.__accessToken = saved;
+    else refreshToken();
+  },[])
   function check(){
     //@ts-ignore
     const token = window.__accessToken;
-    if(token){
-      return router.push('/play');
+    if(!token){
+      router.push('/signin');
+      return ;
     }
+    router.push('/play');
   }
   return (
     <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">

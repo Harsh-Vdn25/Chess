@@ -1,4 +1,4 @@
-async function refreshToken(){
+export async function refreshToken(){
     const res = await fetch('http://localhost:5000/api/user/refresh',{
         method:"POST",
         credentials:"include"

@@ -7,8 +7,14 @@ async function main(){
     const redisClient = await connectToRedis();
     startWorker();
     const gamemanager = new GameManager(redisClient);
-    wss.on('connection',(socket)=>{
-        gamemanager.handleMessage(socket);
+    wss.on('connection',(socket,request)=>{
+        const url = request.url;
+        const queryParams = new URLSearchParams(url?.split("?")[1]);
+        const token = queryParams.get("token");
+        if(!token){
+            return ;
+        }
+        gamemanager.handleMessage(socket,token);
         socket.on('close',()=>gamemanager.removeUser(socket));
     })
 }

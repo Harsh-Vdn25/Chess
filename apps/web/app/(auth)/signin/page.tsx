@@ -14,7 +14,6 @@ export default function Login() {
     if(!resStr){
         return ;
     }
-    console.log(resStr);
     return router.push('/');
   }
 

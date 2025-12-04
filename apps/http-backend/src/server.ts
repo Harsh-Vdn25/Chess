@@ -1,6 +1,7 @@
 import express from 'express';
 import { userRouter } from './routes/userRoute';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 const app=express();
 
 const corsOptions={
@@ -9,6 +10,7 @@ const corsOptions={
     credentials:true
 };
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions))
 app.use('/api/user',userRouter);
 

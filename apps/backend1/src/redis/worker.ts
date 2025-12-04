@@ -24,16 +24,14 @@ async function saveMessages(){
             }
         })
         try{
-            console.log(moves);
             const response = await prisma.move.createMany({
             data:moves
         })
-        console.log("saved:",response);
         await client.flushAll('ASYNC');
         }catch(err){
             console.log("failed",err);
             return;
         }
         saveMessages();
-    },2500);    
+    },5000);    
 }

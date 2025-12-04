@@ -20,19 +20,18 @@ export class GameManager{
     addUser({socket,userId}:usersType){
         users.push({socket,userId});
     }
-    async handleMessage(socket:WebSocket){
+    async handleMessage(socket:WebSocket,token:string){
         socket.on('message',async (data : any)=>{
             const x= data.toString();
             const message = JSON.parse(x);
             if(message.type === INIT_GAME){
-                 const token = message.token;
                  const userId = await decodeToken(token);
                  this.addUser({socket,userId});
                  if(this.pendingUser === null){
                     this.pendingUser = socket;
                     this.player1 = userId;
                  }else{
-                    if(this.player1 === userId){
+                    if(this.player1 === userId){ 
                         return sendMessage({type:ERROR,payload:{message:"You cant play two games simultaneously"}},socket)
                     }
                     try{

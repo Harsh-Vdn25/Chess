@@ -12,6 +12,7 @@ export async function login(username:string,password:string){
         const data = await res.json();
         //@ts-ignore
         window.__accessToken = data.token;
+        localStorage.setItem("Token",data.token);
         return data.message;
     }catch(err){
         console.log(err);
