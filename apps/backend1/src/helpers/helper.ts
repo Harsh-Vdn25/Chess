@@ -1,8 +1,8 @@
 import WebSocket from "ws";
 import { ERROR,GAME_OVER,INIT_GAME } from "@repo/common/config";
-
 export interface messageType{
     type: typeof ERROR | typeof INIT_GAME | typeof GAME_OVER;
+    gameId?:string;
     payload:{
         color?:"white" | "black",
         message?:string,

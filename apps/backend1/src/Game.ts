@@ -1,15 +1,20 @@
 import WebSocket from "ws";
-import Chess, { WHITE } from "@repo/common/chess";
+import Chess from "@repo/common/chess";
 import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
 import { checkMove, sendMessage } from "./helpers/helper";
+import { clientType } from "./redis/redisClient";
 export class Game{
     public player1: WebSocket;
     public player2: WebSocket;
+    private gameId: string;
     private chess: Chess;
-    constructor(player1:WebSocket,player2:WebSocket){
+    private redisClient : clientType;
+    constructor(player1:WebSocket,player2:WebSocket,redisClient:clientType,gameId:string){
         this.player1 = player1;
         this.player2 = player2;
+        this.gameId = gameId;
         this.chess= new Chess();
+        this.redisClient = redisClient;
         this.initGame();
     }
     initGame(){
@@ -19,12 +24,13 @@ export class Game{
         ]){
         sendMessage({
             type:INIT_GAME,
+            gameId:this.gameId,
             payload:{color:color}
         },socket)
     }
     }
     
-    makeMove(socket: WebSocket,move : {
+    async makeMove(socket: WebSocket,move : {
         from :string,
         to :string
     }){
@@ -71,10 +77,18 @@ export class Game{
             }else{
                 message={
                     type:MOVE,
+                    gameId:this.gameId,
                     payload:{
                         move:move
                     }
                 }
+                await this.redisClient.xAdd(
+                    "games",
+                    '*',
+                    {   
+                        json:JSON.stringify({message})
+                    }
+                )
             }
             for(const p of [this.player1,this.player2]){
                 p.send(JSON.stringify(message));

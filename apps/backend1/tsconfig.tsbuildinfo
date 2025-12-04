@@ -1,1 +1,1 @@
-{"root":["./src/game.ts","./src/gamemanager.ts","./src/index.ts","./src/helpers/helper.ts"],"version":"5.9.2"}
+{"root":["./src/game.ts","./src/gamemanager.ts","./src/index.ts","./src/helpers/helper.ts","./src/helpers/state.ts","./src/redis/redisclient.ts","./src/redis/worker.ts"],"version":"5.9.2"}
