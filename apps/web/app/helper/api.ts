@@ -1,5 +1,7 @@
+import { URLS } from "../config/URLConfig";
 export async function refreshToken(){
-    const res = await fetch('http://localhost:5000/api/user/refresh',{
+  const http_url = URLS.HTTP_URL;
+    const res = await fetch(`${http_url}/api/user/refresh`,{
         method:"POST",
         credentials:"include"
     })
@@ -13,8 +15,8 @@ export async function refreshToken(){
 export async function api(path: string, options:RequestInit = {}) {
     //@ts-ignore
   const accessToken = window.__accessToken;
-
-  const res = await fetch("http://localhost:5000/api" + path, {
+  const http_url = URLS.HTTP_URL;
+  const res = await fetch(`${http_url}/api` + path, {
     ...options,
     headers: { 
       ...(options.headers || {}),

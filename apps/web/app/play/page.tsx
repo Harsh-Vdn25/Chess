@@ -39,10 +39,6 @@ export default function Play(){
                     setBoard(chess.board());
                     break;
                 case GAME_OVER:
-                    if(!message.payload){
-                        alert("Game is already finished start new");
-                        break;
-                    }
                     move = message.payload.move;
                     const Winner = message.payload.winner;
                     chess.move(move);
