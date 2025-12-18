@@ -10,7 +10,7 @@ export default function Login() {
   async function handleLogin(e:React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage("Logging in...");
-    const resStr = await login(username,password);
+    const resStr = await login(username,password,"signin");
     if(!resStr){
         return ;
     }

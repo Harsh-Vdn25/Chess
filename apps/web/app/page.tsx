@@ -24,7 +24,7 @@ export default function MainPage(){
   return (
     <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
       <div className="flex gap-4">
-        <div className="border-4 rounded+-lg border-gray-700">
+        <div className="border-4 rounded-lg border-gray-700">
           <img
             src={Chessboard.src ?? Chessboard} 
             alt="chessboard"

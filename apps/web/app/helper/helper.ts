@@ -1,7 +1,7 @@
-"use client"
-export async function login(username:string,password:string){
+import { URLS } from "../config/URLConfig";
+export async function login(username:string,password:string,type:string){
     try{
-        const res = await fetch(`http://localhost:5000/api/user/signin`,{
+        const res = await fetch(`${URLS.HTTP_URL}/api/user/${type}`,{
             method:"POST",
             credentials:"include",
             headers:{
