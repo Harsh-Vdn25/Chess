@@ -9,18 +9,17 @@ import { sendMessage } from './helpers/helper';
 
 export class GameManager{
     private games: Game[];
-    private pendingUser: WebSocket|null;
-    private player1:number =-1;
+    private pendingUser: number=-1;
+    private player2:number =-1;
     public redisClient:clientType;
     constructor(redisClient:clientType){
         this.games = [];
-        this.pendingUser = null;
         this.redisClient = redisClient;
     }
     addUser({socket,userId}:usersType){
         users.push({socket,userId});
     }
-    checkUser(userId:string){
+    checkUser(userId:number){
         return users.find(x=>x.userId === userId);
     }
     async handleMessage(socket:WebSocket,token:string){
@@ -41,29 +40,29 @@ export class GameManager{
                     return sendMessage({type:REJOIN,payload:{FEN: FEN}},socket);
                  }
                  this.addUser({socket,userId});
-                 if(this.pendingUser === null){
-                    this.pendingUser = socket;
-                    this.player1 = userId;
+                 if(this.pendingUser === -1){
+                    this.pendingUser = userId;
                  }else{
-                    if(this.player1 === userId){ 
+                    this.player2 = userId;
+                    if(this.pendingUser === userId){ //if the pedingUser logs in again then this is triggered
                         return sendMessage({type:ERROR,payload:{message:"You cant play two games simultaneously"}},socket)
                     }
                     try{
                         const saveGame = await prisma.game.create({
                             data:{
-                                userId1:this.player1,
-                                userId2:userId
+                                userId1:this.pendingUser,
+                                userId2:this.player2
                             }
                         })
                         userGame.push({
-                            player1:this.player1,
-                            player2:saveGame.userId2,
+                            player1:this.pendingUser,
+                            player2:this.player2,
                             gameId:saveGame.id
-                            });
-                        this.player1=-1;
-                        const game = new Game(this.pendingUser,socket,this.redisClient,saveGame.id);
+                        });
+                        const game = new Game(this.pendingUser,this.player2,this.redisClient,saveGame.id);
                         this.games.push(game);
-                        this.pendingUser = null;
+                        this.pendingUser = -1;
+                        this.player2 = -1;
                     }catch(err){
                         console.log(err);
                         return;

@@ -6,7 +6,7 @@ export interface usersGame{
 }
 export interface usersType{
     socket:WebSocket;
-    userId:String;
+    userId:number;
 }
 export const users : usersType[] = [];
 export const userGame : usersGame[] = [];

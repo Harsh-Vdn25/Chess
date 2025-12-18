@@ -3,19 +3,28 @@ import Chess from "@repo/common/chess";
 import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
 import { checkMove, sendMessage } from "./helpers/helper";
 import { clientType } from "./redis/redisClient";
+import { users } from "./helpers/state";
 export class Game{
-    public player1: WebSocket;
-    public player2: WebSocket;
+    //@ts-ignore
+    public player1 : WebSocket;//@ts-ignore
+    public player2 : WebSocket;
+    private player1Id:number;
+    private player2Id:number;
     private gameId: string;
     public chess: Chess;
     private redisClient : clientType;
-    constructor(player1:WebSocket,player2:WebSocket,redisClient:clientType,gameId:string){
-        this.player1 = player1;
-        this.player2 = player2;
+    constructor(player1:number,player2:number,redisClient:clientType,gameId:string){
+        this.player1Id = player1;
+        this.player2Id = player2;
         this.gameId = gameId;
         this.chess= new Chess();
         this.redisClient = redisClient;
+        this.getPlayerSockets();
         this.initGame();
+    }
+    getPlayerSockets(){
+        this.player1 = users.find(x=>x.userId = this.player1Id)?.socket !;
+        this.player2 = users.find(x=>x.userId = this.player2Id)?.socket !;
     }
     initGame(){
         for(const {socket,color} of [
