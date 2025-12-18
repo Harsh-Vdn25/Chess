@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
 import {ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN} from '@repo/common/config'
 import Chess from "@repo/common/chess";
-import {useRouter} from "next/navigation";
 
 export default function Play(){
     const [chess,setChess]=useState<Chess>(new Chess());
@@ -15,7 +14,6 @@ export default function Play(){
     const [socket,setSocket]=useState<WebSocket|null>(null);
     const [isGameOver,setIsGameOver]=useState(false);
     const [colorWon,setColorWon]=useState('');
-    const router = useRouter();
     useEffect(()=>{
         if(socket)return;
         useSocket({socket,setSocket});
@@ -50,12 +48,15 @@ export default function Play(){
                     alert(Winner);
                     break;
                 case REJOIN:
-                    console.log(message.payload.Board[0]);
-                    const board = message.payload.Board[0];
-                    setBoard(board);
+                    const FEN = message.payload.FEN[0]
+                    console.log(FEN,typeof FEN)
+                    const newChess = new Chess(FEN);
+                    setChess(newChess);
+                    console.log(newChess.turn());
+                    setBoard(newChess.board());
                     break;
                 case ERROR:
-                    alert(message.payload.message)
+                    alert(message.payload.message);
                     break;
                 
             }

@@ -1,0 +1,24 @@
+name: Deploy to EC2
+on:
+    push:
+        branches:
+          - x
+jobs:
+    deploy:
+        name: Deploy to EC2
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the code
+              uses: actions/checkout@v2
+            - name: SSH into the machine
+              uses: appleboy/ssh-action@v1.2.0
+              with:
+                host: ${{secrets.HOST_NAME}}
+                username: ubuntu
+                key: ${{secrets.SSH_PRIVATE_KEY}}
+                port: 22
+                script: |
+                    cd ~/Chess
+                    git pull
+                    pnpm install
+                    pnpm run build

@@ -37,8 +37,8 @@ export class GameManager{
                         (x.player2 === ExistingSocket)?x.player2 = socket : x.player2 
                         return x.chess;
                     })
-                    const chessBoard = chess.map(x=>x.board());
-                    return sendMessage({type:REJOIN,payload:{Board:chessBoard}},socket);
+                    const FEN = chess.map(x=>x.fen());
+                    return sendMessage({type:REJOIN,payload:{FEN: FEN}},socket);
                  }
                  this.addUser({socket,userId});
                  if(this.pendingUser === null){

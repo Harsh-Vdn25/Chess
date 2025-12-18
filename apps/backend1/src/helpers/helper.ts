@@ -7,7 +7,7 @@ export interface messageType{
         color?:"white" | "black",
         message?:string,
         winner?:string,
-        Board?:any
+        FEN?:any
     } 
 }
 
