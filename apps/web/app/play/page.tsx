@@ -27,7 +27,7 @@ export default function Play(){
         socket.onmessage=(data :any)=>{
             const msgData=data.data;
             const message=JSON.parse(msgData);
-            let move;
+            let move:{from:string,to:string};
             switch(message.type){
                 case INIT_GAME:
                     setStarted(true);
@@ -35,8 +35,12 @@ export default function Play(){
                     break;
                 case MOVE:
                     move = message.payload.move;
-                    chess.move(move);
-                    setBoard(chess.board());
+                    setChess(prev => {
+                    const newChess = new Chess(prev.fen());
+                    newChess.move(move);
+                    setBoard(newChess.board());
+                    return newChess;
+                    });
                     break;
                 case GAME_OVER:
                     move = message.payload.move;
@@ -48,11 +52,9 @@ export default function Play(){
                     alert(Winner);
                     break;
                 case REJOIN:
-                    const FEN = message.payload.FEN[0]
-                    console.log(FEN,typeof FEN)
+                    const FEN = message.payload.FEN
                     const newChess = new Chess(FEN);
                     setChess(newChess);
-                    console.log(newChess.turn());
                     setBoard(newChess.board());
                     break;
                 case ERROR:

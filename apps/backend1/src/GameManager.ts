@@ -30,13 +30,14 @@ export class GameManager{
                  const userId = await decodeToken(token);
                  const isExisting = this.checkUser(userId);
                  if(isExisting){
-                    const ExistingSocket = isExisting.socket;
-                    const chess = this.games.map(x=>{
-                        (x.player1 === ExistingSocket)?x.player1 = socket : x.player1 ||
-                        (x.player2 === ExistingSocket)?x.player2 = socket : x.player2 
-                        return x.chess;
+                    const ExistingUser = isExisting.userId;
+                    users.map(x=>{
+                        x.socket=(x.userId === ExistingUser ? socket : x.socket ) 
                     })
-                    const FEN = chess.map(x=>x.fen());
+                    const chess = this.games.find(x=>(x.player1Id === userId || x.player2Id === userId));
+                    chess?.getPlayerSockets();
+                    chess?.initGame();//send the colours after the refresh;
+                    const FEN = chess?.chess.fen();
                     return sendMessage({type:REJOIN,payload:{FEN: FEN}},socket);
                  }
                  this.addUser({socket,userId});

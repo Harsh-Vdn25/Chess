@@ -8,8 +8,8 @@ export class Game{
     //@ts-ignore
     public player1 : WebSocket;//@ts-ignore
     public player2 : WebSocket;
-    private player1Id:number;
-    private player2Id:number;
+    public player1Id:number;
+    public player2Id:number;
     private gameId: string;
     public chess: Chess;
     private redisClient : clientType;
@@ -23,8 +23,8 @@ export class Game{
         this.initGame();
     }
     getPlayerSockets(){
-        this.player1 = users.find(x=>x.userId = this.player1Id)?.socket !;
-        this.player2 = users.find(x=>x.userId = this.player2Id)?.socket !;
+        this.player1 = users.find(x=>x.userId === this.player1Id)?.socket !;
+        this.player2 = users.find(x=>x.userId === this.player2Id)?.socket !;
     }
     initGame(){
         for(const {socket,color} of [
