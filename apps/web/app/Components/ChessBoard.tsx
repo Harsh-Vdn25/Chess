@@ -20,7 +20,7 @@ export default function ChessBoard({socket,board}:{
                     {
                         Square.map((Box,j)=>{
                             const squarePosition = String.fromCharCode(65+j).toLowerCase()  + (8-i).toString();
-                            return <div className={`w-8 h-8 shadow-black flex justify-center items-center  cursor-pointer ${(i+j)%2 === 0 ? "bg-green-500":"bg-green-200"} text-black`}
+                            return <div className={`w-12 h-9 shadow-black flex justify-center items-center  cursor-pointer ${(i+j)%2 === 0 ? "bg-green-500":"bg-green-200"} text-black`}
                             key={j}
                             onClick={()=>{
                                 if(!from && Box?.type){
@@ -48,7 +48,7 @@ export default function ChessBoard({socket,board}:{
                                     Box?.type&&(
                                         <img src={ChessPieces[Box?.type]?.src}
                                             alt={Box?.type}
-                                            className={`w-8 h-8 ${Box?.color==='b'?"" :"invert"}`} />
+                                            className={`w-12 h-9 ${Box?.color==='b'?"" :"invert"}`} />
                                     )
                                 }
                             </div>

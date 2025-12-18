@@ -7,7 +7,7 @@ export class Game{
     public player1: WebSocket;
     public player2: WebSocket;
     private gameId: string;
-    private chess: Chess;
+    public chess: Chess;
     private redisClient : clientType;
     constructor(player1:WebSocket,player2:WebSocket,redisClient:clientType,gameId:string){
         this.player1 = player1;

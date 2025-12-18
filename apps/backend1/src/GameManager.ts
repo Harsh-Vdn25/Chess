@@ -1,6 +1,6 @@
 import WebSocket from 'ws';
 import { Game } from './Game';
-import {ERROR, INIT_GAME, MOVE} from '@repo/common/config';
+import {ERROR, INIT_GAME, MOVE, REJOIN} from '@repo/common/config';
 import { clientType } from './redis/redisClient';
 import { prisma } from '@repo/db/client';
 import { decodeToken } from '@repo/backend-common/index';
@@ -20,12 +20,26 @@ export class GameManager{
     addUser({socket,userId}:usersType){
         users.push({socket,userId});
     }
+    checkUser(userId:string){
+        return users.find(x=>x.userId === userId);
+    }
     async handleMessage(socket:WebSocket,token:string){
         socket.on('message',async (data : any)=>{
             const x= data.toString();
             const message = JSON.parse(x);
             if(message.type === INIT_GAME){
                  const userId = await decodeToken(token);
+                 const isExisting = this.checkUser(userId);
+                 if(isExisting){
+                    const ExistingSocket = isExisting.socket;
+                    const chess = this.games.map(x=>{
+                        (x.player1 === ExistingSocket)?x.player1 = socket : x.player1 ||
+                        (x.player2 === ExistingSocket)?x.player2 = socket : x.player2 
+                        return x.chess;
+                    })
+                    const chessBoard = chess.map(x=>x.board());
+                    return sendMessage({type:REJOIN,payload:{Board:chessBoard}},socket);
+                 }
                  this.addUser({socket,userId});
                  if(this.pendingUser === null){
                     this.pendingUser = socket;

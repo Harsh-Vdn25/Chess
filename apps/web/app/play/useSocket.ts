@@ -6,7 +6,7 @@ export function useSocket({socket,setSocket}:{
 }){
     //@ts-ignore
     const token = window.__accessToken;
-    const ws_url = URLS.WS_URL;
+    const ws_url=URLS.WS_URL;
     if(!ws_url){
         throw new Error("No URL present");
     }
