@@ -45,8 +45,12 @@ export default function Play(){
                 case GAME_OVER:
                     move = message.payload.move;
                     const Winner = message.payload.winner;
-                    chess.move(move);
-                    setBoard(chess.board());
+                    setChess(prev => {
+                        const newChess=new Chess(prev.fen());
+                        newChess.move(move);
+                        setBoard(newChess.board());
+                        return newChess;
+                    });
                     setIsGameOver(true);
                     setColorWon(Winner);
                     alert(Winner);
@@ -60,7 +64,6 @@ export default function Play(){
                 case ERROR:
                     alert(message.payload.message);
                     break;
-                
             }
         }
         return ()=>{
