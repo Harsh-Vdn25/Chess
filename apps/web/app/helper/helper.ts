@@ -10,6 +10,9 @@ export async function login(username:string,password:string,type:string){
             body:JSON.stringify({username,password})
         });
         const data = await res.json();
+        if(!data.token){
+            return null;
+        }
         //@ts-ignore
         window.__accessToken = data.token;
         localStorage.setItem("Token",data.token);

@@ -8,7 +8,6 @@ export const createToken = (userId: number, isAccess:boolean,secret:string): str
         secret,
         isAccess?{ expiresIn:"15m" }:{expiresIn:"30d"}
     );
-
     return token;
 };
 export const decodeToken=async(token:string)=>{
