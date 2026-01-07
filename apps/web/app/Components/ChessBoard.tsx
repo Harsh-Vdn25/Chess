@@ -4,13 +4,14 @@ import { ChessPieces } from "../config/config";
 import { useState } from "react";
 import { MOVE } from "@repo/common/config";
 
-export default function ChessBoard({socket,board}:{
+export default function ChessBoard({socket,board,color}:{ // rotating the chessboard and the pieces such that pieces face him 
     socket:WebSocket,
     board: ({
-    square: Square;
-    type: PieceSymbol;
-    color: Color;
-} | null)[][]
+        square: Square;
+        type: PieceSymbol;
+        color: Color;
+    } | null)[][],
+    color:string
 }){
     const [from,setFrom]=useState('');
     return <div className="w-72 flex flex-col ">

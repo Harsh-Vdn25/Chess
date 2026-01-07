@@ -83,6 +83,9 @@ export class Game{
                         winner:`${colorWon} Won`
                     }
                 }
+                // await this.redisClient.xAdd(
+                //     "games",
+                // )
             }else{
                 message={
                     type:MOVE,

@@ -27,7 +27,7 @@ export class GameManager{
             const x= data.toString();
             const message = JSON.parse(x);
             if(message.type === INIT_GAME){
-                 const userId = await decodeToken(token);
+                 const userId = Number(await decodeToken(token));
                  const isExisting = this.checkUser(userId);
                  if(isExisting){
                     const ExistingUser = isExisting.userId;
@@ -38,7 +38,7 @@ export class GameManager{
                     chess?.getPlayerSockets();
                     chess?.initGame();//send the colours after the refresh;
                     const FEN = chess?.chess.fen();
-                    return sendMessage({type:REJOIN,payload:{FEN: FEN}},socket);
+                    return sendMessage({type:REJOIN,payload:{FEN: FEN }},socket);
                  }
                  this.addUser({socket,userId});
                  if(this.pendingUser === -1){

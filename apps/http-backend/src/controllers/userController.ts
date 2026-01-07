@@ -43,7 +43,7 @@ export async function Signin(req:Request,res:Response){
         
         res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
-            secure:true,
+            secure:process.env.NODE_ENV === "production",
             sameSite:"lax",
             path:"/api/auth/refresh"
         });

@@ -11,16 +11,9 @@ export default function Play(){
     const [board,setBoard]=useState(chess.board());
     const [isStarted,setStarted]=useState(false);
     const [color,setColor]=useState("");
-    const [socket,setSocket]=useState<WebSocket|null>(null);
     const [isGameOver,setIsGameOver]=useState(false);
     const [colorWon,setColorWon]=useState('');
-    useEffect(()=>{
-        if(socket)return;
-        useSocket({socket,setSocket});
-        return ()=>{
-            setSocket(null);
-        }
-    },[])
+    const socket = useSocket();
 
     useEffect(()=>{
         if(!socket)return;
@@ -83,7 +76,7 @@ export default function Play(){
     return (
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
             <div className="flex">
-                <ChessBoard board={board} socket={socket}/>
+                <ChessBoard board={board} socket={socket} color={color}/>
                 <div className="bg-gray-700">
                 {
                     isStarted?(

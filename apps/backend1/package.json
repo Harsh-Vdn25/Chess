@@ -18,8 +18,10 @@
     "@repo/backend-common": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",
+    "@types/cookie": "^1.0.0",
     "@types/redis": "^4.0.11",
     "@types/ws": "^8.18.1",
+    "cookie": "^1.1.1",
     "dotenv": "^17.2.3",
     "redis": "^5.10.0",
     "ws": "^8.18.3"
