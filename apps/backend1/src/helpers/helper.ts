@@ -1,14 +1,17 @@
 import WebSocket from "ws";
-import { ERROR,GAME_OVER,INIT_GAME, REJOIN, TOKEN_ERROR } from "@repo/common/config";
+import { ERROR,GAME_OVER,INIT_GAME,MOVE, REJOIN, TOKEN_ERROR } from "@repo/common/config";
 
-type payloadType = typeof ERROR | typeof INIT_GAME | typeof GAME_OVER | typeof REJOIN | typeof TOKEN_ERROR;
+type payloadType = typeof ERROR | typeof INIT_GAME | typeof MOVE | typeof GAME_OVER | typeof REJOIN | typeof TOKEN_ERROR;
 export interface messageType{
     type: payloadType;
     gameId?:string;
     payload:{
         color?:"white" | "black",
         message?:string,
-        winner?:string,
+        winner?:{
+            userId:number
+            colour:string
+        },
         FEN?:any
     } 
 }

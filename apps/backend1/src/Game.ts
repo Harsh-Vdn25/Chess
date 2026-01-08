@@ -75,18 +75,24 @@ export class Game{
             }
             this.chess.move(move);
             if(this.chess.isCheckmate()){
-                const colorWon=this.chess.turn() === 'b' ? "white" : "black"; 
+                const colorWon = this.chess.turn() === 'b' ? "white" : "black"; 
                 message={
                     type : GAME_OVER,
                     gameId: this.gameId,
                     payload:{
                         move:move,
-                        winner:`${colorWon} Won`
+                        winner:{
+                            userId: (colorWon === 'white'? this.player1Id:this.player2Id),
+                            color: colorWon
+                        }
                     }
                 }
-                // await this.redisClient.xAdd(
-                //     "games",
-                // )
+                await this.redisClient.xAdd(
+                    "wins",
+                    '*',{
+                        json:JSON.stringify({message})
+                    }
+                )
             }else{
                 message={
                     type:MOVE,
@@ -104,7 +110,7 @@ export class Game{
                 )
             }
             for(const p of [this.player1,this.player2]){
-                p.send(JSON.stringify(message));
+                p.send(JSON.stringify(message));//using sendMessage is causing a type issue here 
             }
         }catch(err){
             console.log(err);

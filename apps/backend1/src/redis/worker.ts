@@ -8,31 +8,52 @@ let client:clientType;
 export async function startWorker(){
     console.log("Worker starting...");
     client = await connectToRedis();
-    await saveMessages();
-}
-
-async function saveMessages(){
-    setTimeout(async()=>{
-        const messages =  await client.xRange("games",'-','+');
-        const moves :movesType[]= messages.map((x)=>{
-            //@ts-ignore
-            const parsed = JSON.parse(x.message.json);
-            return {
-                //@ts-ignore
-                gameId:parsed.message.gameId,
-                move:JSON.stringify(parsed.message.payload.move)
-            }
-        })
+    while (true) {
+        const sleep = (ms:number) => new Promise(r=>setTimeout(r,ms));
+        
         try{
-            const response = await prisma.move.createMany({
-            data:moves
-        })
-        await client.flushAll('ASYNC');
-        }catch(err){
-            console.log("failed",err);
-            return;
+            const gameMessages = await client.xRange("games",'-','+');
+        if(gameMessages.length > 0){
+            const moves = gameMessages.map(x=>{
+                //@ts-ignore
+                const parsed = JSON.parse(x.message.json);
+                return {
+                    gameId: parsed.message.gameId,
+                    move:JSON.stringify(parsed.message.payload.move)
+                }
+            })
+            await prisma.move.createMany({data:moves})
         }
-        saveMessages();
-    },5000);    
+        await client.del("games");
+                const winMessages = await client.xRange("wins",'-','+');
+        if(winMessages.length > 0){
+            const wins :{
+                gameId:string,
+                winner:{
+                    userId:number,
+                    color:string
+                }
+            }[] = winMessages.map(x=>{
+                //@ts-ignore
+                const parsed = JSON.parse(x.message.json);
+                return {
+                    gameId: parsed.message.gameId,
+                    winner: parsed.message.payload.winner
+                }
+            })
+            wins.forEach(async(ele) => {
+                await prisma.verdict.create({
+                    data:{
+                        WinnerId: ele.winner.userId,
+                        gameId: ele.gameId
+                    }
+                })
+            });
+        }
+        await client.del("wins");
+        }catch(err){
+            console.log("Worker error:",err);
+        }
+        await sleep(5000);
+    }
 }
-//create another stream push the winners to that and update the Winner in DB
