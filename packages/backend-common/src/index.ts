@@ -10,10 +10,14 @@ export const createToken = (userId: number, isAccess:boolean,secret:string): str
     );
     return token;
 };
-export const decodeToken=async(token:string)=>{
+export const verifyToken=async(token:string,secret:string)=>{
     if(!token) return false;
-    const decoded = jwt.decode(token);
-    const userId = (decoded as JwtPayload).id;
-    if(!userId) return ;
-    return userId;
+    try{
+        const decoded = jwt.verify(token,secret);
+        const userId = (decoded as JwtPayload).id;
+        if(!userId) return null;
+        return userId;
+    }catch(err){
+        return null;
+    }
 }

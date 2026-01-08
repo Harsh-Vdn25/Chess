@@ -1,7 +1,9 @@
 import WebSocket from "ws";
-import { ERROR,GAME_OVER,INIT_GAME, REJOIN } from "@repo/common/config";
+import { ERROR,GAME_OVER,INIT_GAME, REJOIN, TOKEN_ERROR } from "@repo/common/config";
+
+type payloadType = typeof ERROR | typeof INIT_GAME | typeof GAME_OVER | typeof REJOIN | typeof TOKEN_ERROR;
 export interface messageType{
-    type: typeof ERROR | typeof INIT_GAME | typeof GAME_OVER | typeof REJOIN;
+    type: payloadType;
     gameId?:string;
     payload:{
         color?:"white" | "black",

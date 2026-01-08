@@ -78,6 +78,7 @@ export class Game{
                 const colorWon=this.chess.turn() === 'b' ? "white" : "black"; 
                 message={
                     type : GAME_OVER,
+                    gameId: this.gameId,
                     payload:{
                         move:move,
                         winner:`${colorWon} Won`
