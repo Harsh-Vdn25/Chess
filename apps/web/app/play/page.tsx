@@ -3,7 +3,7 @@ import { Button } from "@repo/ui/button";
 import ChessBoard from "../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import {ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
+import {CLOSE, ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
 import Chess from "@repo/common/chess";
 import { refreshToken } from "../helper/api";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,10 @@ import { useRouter } from "next/navigation";
 export default  function Play(){
     const [chess,setChess]=useState<Chess>(new Chess());
     const [board,setBoard]=useState(chess.board());
+    const [userId,setUserId] = useState(0);
+    const [gameId,setGameId]=useState('');
     const [isStarted,setStarted]=useState(false);
-    const [color,setColor]=useState("");
+    const [color,setColor]=useState('');
     const [isGameOver,setIsGameOver]=useState(false);
     const [colorWon,setColorWon]=useState('');
     let socket = useSocket();
@@ -28,6 +30,8 @@ export default  function Play(){
                 case INIT_GAME:
                     setStarted(true);
                     setColor(message.payload.color);
+                    setGameId(message.gameId);
+                    setUserId(message.userId);
                     break;
                 case MOVE:
                     move = message.payload.move;
@@ -50,6 +54,10 @@ export default  function Play(){
                     setIsGameOver(true);
                     setColorWon(Winner);
                     alert(Winner);
+                    socket.send(JSON.stringify({
+                        type:CLOSE,
+                        gameId:gameId
+                    }))
                     break;
                 case REJOIN:
                     const FEN = message.payload.FEN
@@ -85,7 +93,8 @@ export default  function Play(){
     return (
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
             <div className="flex">
-                <ChessBoard board={board} socket={socket} color={color}/>
+                <ChessBoard board={board} socket={socket} 
+                    color={color} userId={userId}/>
                 <div className="bg-gray-700">
                 {
                     isStarted?(

@@ -4,14 +4,15 @@ import { ChessPieces } from "../config/config";
 import { useState } from "react";
 import { MOVE } from "@repo/common/config";
 
-export default function ChessBoard({socket,board,color}:{ // rotating the chessboard and the pieces such that pieces face him 
+export default function ChessBoard({socket,board,color,userId}:{ // rotating the chessboard and the pieces such that pieces face him 
     socket:WebSocket,
+    userId:number,
     board: ({
         square: Square;
         type: PieceSymbol;
         color: Color;
     } | null)[][],
-    color:string
+    color:string,
 }){
     const [from,setFrom]=useState('');
     return <div className="w-72 flex flex-col ">
@@ -35,6 +36,7 @@ export default function ChessBoard({socket,board,color}:{ // rotating the chessb
                                     }
                                     socket.send(JSON.stringify({
                                         type:MOVE,
+                                        userId:userId,
                                         payload:{
                                             move:{
                                                 from:from,

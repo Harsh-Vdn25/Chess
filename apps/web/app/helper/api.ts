@@ -7,13 +7,11 @@ export async function refreshToken(){
     })
     if(!res.ok) return null;
     const data = await res.json();
-    console.log(data);
     localStorage.setItem("Token",data.newAccessToken);
     return data.token;
 }
 export async function api(path: string, options:RequestInit = {}) {
-    //@ts-ignore
-  const accessToken = window.__accessToken;
+  const accessToken = localStorage.getItem("Token");
   const http_url = URLS.HTTP_URL;
   const res = await fetch(`${http_url}/api` + path, {
     ...options,

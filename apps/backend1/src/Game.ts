@@ -27,12 +27,13 @@ export class Game{
         this.player2 = users.find(x=>x.userId === this.player2Id)?.socket !;
     }
     initGame(){
-        for(const {socket,color} of [
-            {socket:this.player1,color:"white" as const},
-            {socket:this.player2,color:"black" as const}
+        for(const {socket,color,userId} of [
+            {socket:this.player1,color:"white" as const,userId:this.player1Id as number},
+            {socket:this.player2,color:"black" as const,userId:this.player2Id as number}
         ]){
         sendMessage({
             type:INIT_GAME,
+            userId:userId,
             gameId:this.gameId,
             payload:{color:color}
         },socket)

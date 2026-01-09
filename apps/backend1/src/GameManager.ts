@@ -77,9 +77,10 @@ export class GameManager{
                  }
             }
             if(message.type === MOVE){
-                const game = this.games.find(x=>x.player1 === socket || x.player2 === socket);
+                const id = message.userId;
+                const game = this.games.find(x=>x.player1 === id || x.player2 === id);
                 game?.makeMove(socket,message.payload.move);
-            }
+        }
         })
     }
     //this function has to be change (try using userIds)
