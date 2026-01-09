@@ -3,21 +3,24 @@ import { Button } from "@repo/ui/button";
 import ChessBoard from "../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import {ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN} from '@repo/common/config'
+import {ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
 import Chess from "@repo/common/chess";
+import { refreshToken } from "../helper/api";
+import { useRouter } from "next/navigation";
 
-export default function Play(){
+export default  function Play(){
     const [chess,setChess]=useState<Chess>(new Chess());
     const [board,setBoard]=useState(chess.board());
     const [isStarted,setStarted]=useState(false);
     const [color,setColor]=useState("");
     const [isGameOver,setIsGameOver]=useState(false);
     const [colorWon,setColorWon]=useState('');
-    const socket = useSocket();
+    let socket = useSocket();
+    const router = useRouter();
 
     useEffect(()=>{
         if(!socket)return;
-        socket.onmessage=(data :any)=>{
+        socket.onmessage=async (data :any)=>{
             const msgData=data.data;
             const message=JSON.parse(msgData);
             let move:{from:string,to:string};
@@ -56,6 +59,12 @@ export default function Play(){
                     break;
                 case ERROR:
                     alert(message.payload.message);
+                    break;
+                case TOKEN_ERROR:
+                    if(!await refreshToken){
+                        return router.push('/signin');
+                    }
+                    window.location.reload();
                     break;
             }
         }

@@ -6,10 +6,9 @@ export async function refreshToken(){
         credentials:"include"
     })
     if(!res.ok) return null;
-     
     const data = await res.json();
-    //@ts-ignore
-    window.__accessToken=data.token;
+    console.log(data);
+    localStorage.setItem("Token",data.newAccessToken);
     return data.token;
 }
 export async function api(path: string, options:RequestInit = {}) {

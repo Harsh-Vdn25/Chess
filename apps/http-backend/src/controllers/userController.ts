@@ -2,7 +2,7 @@ import type{ Request,Response } from "express";
 import {prisma} from '@repo/db/client';
 import { hashPassword,getCred } from "../helpers/helper";
 import bcrypt from 'bcrypt';
-import { createToken, decodeToken } from "@repo/backend-common/index";
+import { createToken, verifyToken } from "@repo/backend-common/index";
 export async function Signup(req:Request,res:Response){
     const {username,password,firstName}=req.body;
     try{
@@ -45,7 +45,7 @@ export async function Signin(req:Request,res:Response){
             httpOnly:true,
             secure:process.env.NODE_ENV === "production",
             sameSite:"lax",
-            path:"/api/auth/refresh"
+            path:"/api/user/refresh"
         });
 
         return res.status(200).json({
@@ -62,7 +62,7 @@ export async function refresh(req:Request,res:Response){
     if(!token) return res.status(401).json({error:"No refresh token"});
 
     try{
-        const userId =await decodeToken(token);
+        const userId =await verifyToken(token,process.env.REFRESH_SECRET !);
         if(!userId){
             return res.status(401).json({error:"Invalid token"});
         }

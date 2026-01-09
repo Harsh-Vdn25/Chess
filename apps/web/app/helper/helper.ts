@@ -13,8 +13,6 @@ export async function login(username:string,password:string,type:string){
         if(!data.token){
             return null;
         }
-        //@ts-ignore
-        window.__accessToken = data.token;
         localStorage.setItem("Token",data.token);
         return data.message;
     }catch(err){
