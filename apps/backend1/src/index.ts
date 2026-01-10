@@ -15,7 +15,6 @@ async function main(){
             return ;
         }
         gamemanager.handleMessage(socket,token);
-        socket.on('close',()=>gamemanager.removeUser(socket));
     })
 }
 main();

@@ -88,7 +88,6 @@ export class GameManager{
             }
         })
     }
-
     endGame({p1,p2,gameId}:{
         p1:number,
         p2:number,
