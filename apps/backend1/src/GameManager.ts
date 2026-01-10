@@ -65,7 +65,11 @@ export class GameManager{
                             sendMessage({type:ERROR,payload:{message:"Failed to initialize the game"}},socket);
                             return ;
                            }
-                           const game = new Game(this.pendingUser,this.player2,this.redisClient,saveGame.id);
+                           const game = new Game(this.pendingUser,this.player2,this.redisClient,saveGame.id,
+                            (p1,p2,gameId)=>
+                                {
+                                    this.endGame({p1,p2,gameId})
+                                });
                            this.games.push(game);
                            this.pendingUser = -1;
                            this.player2 = -1;
@@ -77,11 +81,26 @@ export class GameManager{
                  }
             }
             if(message.type === MOVE){
-                const id = message.userId;
-                const game = this.games.find(x=>x.player1 === id || x.player2 === id);
+                console.log(message);
+                const gameId = message.gameId;
+                const game = this.games.find(x=>x.gameId === gameId);
                 game?.makeMove(socket,message.payload.move);
-        }
+            }
         })
+    }
+
+    endGame({p1,p2,gameId}:{
+        p1:number,
+        p2:number,
+        gameId:string
+    }){
+        this.games = this.games.filter(x=>x.gameId ! = gameId);
+        for(let i=users.length-1;i>=0;i++){
+            //looping back cuz using splice while moving forward might shift the elements andsome might be ignored
+            if(users[i]?.userId === p1 || users[i]?.userId === p2){
+                users.splice(i,1);
+            }
+        }
     }
     //this function has to be change (try using userIds)
     removeUser(socket:WebSocket){

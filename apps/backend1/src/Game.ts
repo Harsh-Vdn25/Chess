@@ -4,21 +4,30 @@ import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
 import { checkMove, sendMessage } from "./helpers/helper";
 import { clientType } from "./redis/redisClient";
 import { users } from "./helpers/state";
+
+type onGameOver = (
+    p1:number,
+    p2:number,
+    gameId:string
+)=>void;
+
 export class Game{
     //@ts-ignore
     public player1 : WebSocket;//@ts-ignore
     public player2 : WebSocket;
     public player1Id:number;
     public player2Id:number;
-    private gameId: string;
+    public gameId: string;
     public chess: Chess;
     private redisClient : clientType;
-    constructor(player1:number,player2:number,redisClient:clientType,gameId:string){
+    private onGameOver: onGameOver;
+    constructor(player1:number,player2:number,redisClient:clientType,gameId:string,callback:onGameOver){
         this.player1Id = player1;
         this.player2Id = player2;
         this.gameId = gameId;
         this.chess= new Chess();
         this.redisClient = redisClient;
+        this.onGameOver = callback;
         this.getPlayerSockets();
         this.initGame();
     }
@@ -82,10 +91,7 @@ export class Game{
                     gameId: this.gameId,
                     payload:{
                         move:move,
-                        winner:{
-                            userId: (colorWon === 'white'? this.player1Id:this.player2Id),
-                            color: colorWon
-                        }
+                        winner:colorWon
                     }
                 }
                 await this.redisClient.xAdd(
@@ -112,6 +118,9 @@ export class Game{
             }
             for(const p of [this.player1,this.player2]){
                 p.send(JSON.stringify(message));//using sendMessage is causing a type issue here 
+            }
+            if(message.type===GAME_OVER){
+                this.onGameOver(this.player1Id,this.player2Id,this.gameId);
             }
         }catch(err){
             console.log(err);

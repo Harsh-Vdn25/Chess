@@ -20,6 +20,18 @@ export default  function Play(){
     let socket = useSocket();
     const router = useRouter();
 
+    function ChangePiecePos(move:{
+        from:string,
+        to:string
+    }){
+        setChess(prev => {
+            const newChess=new Chess(prev.fen());
+            newChess.move(move);
+            setBoard(newChess.board());
+            return newChess;
+        });
+    }
+
     useEffect(()=>{
         if(!socket)return;
         socket.onmessage=async (data :any)=>{
@@ -35,29 +47,15 @@ export default  function Play(){
                     break;
                 case MOVE:
                     move = message.payload.move;
-                    setChess(prev => {
-                    const newChess = new Chess(prev.fen());
-                    newChess.move(move);
-                    setBoard(newChess.board());
-                    return newChess;
-                    });
+                    ChangePiecePos(move);
                     break;
                 case GAME_OVER:
                     move = message.payload.move;
                     const Winner = message.payload.winner;
-                    setChess(prev => {
-                        const newChess=new Chess(prev.fen());
-                        newChess.move(move);
-                        setBoard(newChess.board());
-                        return newChess;
-                    });
+                    ChangePiecePos(move);
                     setIsGameOver(true);
                     setColorWon(Winner);
                     alert(Winner);
-                    socket.send(JSON.stringify({
-                        type:CLOSE,
-                        gameId:gameId
-                    }))
                     break;
                 case REJOIN:
                     const FEN = message.payload.FEN
@@ -94,7 +92,7 @@ export default  function Play(){
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
             <div className="flex">
                 <ChessBoard board={board} socket={socket} 
-                    color={color} userId={userId}/>
+                    color={color} gameId={gameId} userId={userId}/>
                 <div className="bg-gray-700">
                 {
                     isStarted?(

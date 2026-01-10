@@ -23,9 +23,11 @@ export function checkMove(a:string){
 }
 
 
-export function sendMessage({type,payload}:messageType,socket:WebSocket){
+export function sendMessage({type,gameId,userId,payload}:messageType,socket:WebSocket){
     return socket.send(JSON.stringify({
         type:type,
+        userId:userId,
+        gameId:gameId,
         payload:payload
     }))
 }
