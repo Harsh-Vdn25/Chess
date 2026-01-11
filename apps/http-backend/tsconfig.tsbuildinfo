@@ -1,1 +1,1 @@
-{"root":["./src/server.ts","./src/controllers/usercontroller.ts","./src/helpers/createtoken.ts","./src/helpers/helper.ts","./src/routes/userroute.ts"],"version":"5.9.2"}
+{"root":["./src/server.ts","./src/controllers/gamecontroller.ts","./src/controllers/usercontroller.ts","./src/helpers/createtoken.ts","./src/helpers/helper.ts","./src/middleware/inputcheck.ts","./src/middleware/tokencheck.ts","./src/routes/gameroute.ts","./src/routes/userroute.ts"],"version":"5.9.2"}

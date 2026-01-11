@@ -17,6 +17,7 @@ export async function Signup(req:Request,res:Response){
         const accessToken = createToken(response.id,true,getCred("ACCESS_SECRET"));
         return res.status(200).json({
             message:"successfully signed up",
+            username:response.username,
             token:accessToken
         });
     }catch(err){
@@ -50,6 +51,7 @@ export async function Signin(req:Request,res:Response){
 
         return res.status(200).json({
             message:"successfully signed in",
+            username:response.username,
             token:accessToken
         });
     }catch(err){
@@ -70,5 +72,23 @@ export async function refresh(req:Request,res:Response){
         return res.json({newAccessToken:newAccessToken});
     }catch(err){
         return res.status(403).json({ error: "Invalid refresh token" });
+    }
+}
+
+export async function getProfile(req:Request,res:Response){
+    const userId = (req as any).userId;
+    try{
+        const games = await prisma.game.findMany({where:{
+            OR:[
+                {userId1:userId},
+                {userId2:userId}
+            ]
+        }})
+        if(games.length === 0){
+            return res.status(200).json({message:"No games played"})
+        }
+        res.status(200).json(games);
+    }catch(err){
+        res.status(500).json({error:err})
     }
 }

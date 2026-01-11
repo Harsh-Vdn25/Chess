@@ -2,6 +2,7 @@ import express from 'express';
 import { userRouter } from './routes/userRoute';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { gameRouter } from './routes/gameRoute';
 const app=express();
 
 const corsOptions={
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions))
 app.use('/api/user',userRouter);
+app.use('/api/game',gameRouter);
 
 app.listen("5000",()=>{
     console.log("Hello");
