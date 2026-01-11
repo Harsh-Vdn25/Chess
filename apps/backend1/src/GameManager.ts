@@ -81,7 +81,6 @@ export class GameManager{
                  }
             }
             if(message.type === MOVE){
-                console.log(message);
                 const gameId = message.gameId;
                 const game = this.games.find(x=>x.gameId === gameId);
                 game?.makeMove(socket,message.payload.move);

@@ -81,12 +81,14 @@ export class Game{
             this.chess.move(move);
             if(this.chess.isCheckmate()){
                 const colorWon = this.chess.turn() === 'b' ? "white" : "black"; 
+                const winnerId = colorWon === "white" ? this.player1Id : this.player2Id
                 message={
                     type : GAME_OVER,
                     gameId: this.gameId,
                     payload:{
                         move:move,
-                        winner:colorWon
+                        winner:colorWon,
+                        userId: winnerId
                     }
                 }
                 await this.redisClient.xAdd(

@@ -25,30 +25,43 @@ export async function startWorker(){
             await prisma.move.createMany({data:moves})
         }
         await client.del("games");
-                const winMessages = await client.xRange("wins",'-','+');
+        const winMessages = await client.xRange("wins",'-','+');
         if(winMessages.length > 0){
             const wins :{
-                gameId:string,
-                winner:{
-                    userId:number,
-                    color:string
-                }
+                gameId: string,
+                winner: number
             }[] = winMessages.map(x=>{
                 //@ts-ignore
                 const parsed = JSON.parse(x.message.json);
                 return {
                     gameId: parsed.message.gameId,
-                    winner: parsed.message.payload.winner
+                    winner: parsed.message.payload.userId
                 }
             })
-            wins.forEach(async(ele) => {
-                await prisma.verdict.create({
-                    data:{
-                        WinnerId: ele.winner.userId,
-                        gameId: ele.gameId
-                    }
-                })
-            });
+            console.log(wins)
+            for( const win of wins ){
+                try{
+                    const winner = await prisma.verdict.create({
+                        data:{
+                            WinnerId: win.winner,
+                            gameId: win.gameId
+                        }
+                    })
+                    console.log(winner);
+                    await prisma.user.update({
+                            where:{
+                                id:winner.WinnerId
+                            },
+                            data:{
+                                points:{
+                                    increment: 3
+                                }
+                            }
+                    })
+                }catch(err){
+                    console.log(err);
+                }
+            }
         }
         await client.del("wins");
         }catch(err){

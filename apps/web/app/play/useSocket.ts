@@ -12,7 +12,9 @@ export function useSocket(){
         }
         if(!token){
             token = await refreshToken();
-            if(!token) return ;
+            if(!token) {
+                return null;
+            } 
             localStorage.getItem("Token");
         }
         const ws=new WebSocket(`${ws_url}?token=${token}`);

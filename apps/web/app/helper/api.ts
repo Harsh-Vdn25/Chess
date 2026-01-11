@@ -10,8 +10,7 @@ export async function refreshToken(){
     localStorage.setItem("Token",data.newAccessToken);
     return data.token;
 }
-export async function api(path: string, options:RequestInit = {}) {
-  const accessToken = localStorage.getItem("Token");
+export async function api(path: string, options:RequestInit = {},accessToken:string) {
   const http_url = URLS.HTTP_URL;
   const res = await fetch(`${http_url}/api` + path, {
     ...options,
@@ -27,7 +26,7 @@ export async function api(path: string, options:RequestInit = {}) {
     const newToken = await refreshToken();
     if (!newToken) return null;
 
-    return api(path, options);
+    return api(path, options,accessToken);
   }
 
   return res.json();

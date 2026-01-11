@@ -33,7 +33,12 @@ export default  function Play(){
     }
 
     useEffect(()=>{
-        if(!socket)return;
+        if(!socket){
+            const timer = setTimeout(()=>{
+                router.push('/signin')
+            },3000)
+            return ()=>clearTimeout(timer);
+        }
         socket.onmessage=async (data :any)=>{
             const msgData=data.data;
             const message=JSON.parse(msgData);
@@ -67,7 +72,8 @@ export default  function Play(){
                     alert(message.payload.message);
                     break;
                 case TOKEN_ERROR:
-                    if(!await refreshToken){
+                    const token = await refreshToken();
+                    if(!token){
                         return router.push('/signin');
                     }
                     window.location.reload();
@@ -86,7 +92,9 @@ export default  function Play(){
         }))
     }
 
-    if(!socket) return <div>Loading....</div>
+    if(!socket) {
+        return <div>Loading....</div>
+    }
     
     return (
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">

@@ -77,17 +77,23 @@ export async function refresh(req:Request,res:Response){
 
 export async function getProfile(req:Request,res:Response){
     const userId = (req as any).userId;
+    console.log(req.cookies);
     try{
+        const userInfo = await prisma.user.findUnique({where:{
+            id:userId
+        }});
+        if(!userInfo)return res.status(401).json({message:"You are not a user"});
         const games = await prisma.game.findMany({where:{
             OR:[
                 {userId1:userId},
                 {userId2:userId}
             ]
         }})
-        if(games.length === 0){
-            return res.status(200).json({message:"No games played"})
-        }
-        res.status(200).json(games);
+        res.status(200).json({
+            username: userInfo.username,
+            points: userInfo.points,
+            games: games
+        });
     }catch(err){
         res.status(500).json({error:err})
     }
