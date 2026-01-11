@@ -28,7 +28,6 @@ export async function login(username:string,password:string,type:string){
         if(!data.token){
             return null;
         }
-        localStorage.setItem("Token",data.token);
         return data.message;
     }catch(err){
         console.log(err);

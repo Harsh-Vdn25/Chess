@@ -2,19 +2,12 @@
 import { useRouter } from "next/navigation"
 import Chessboard from './assets/chessboard1.jpeg'
 import { Button } from "../../../packages/ui/src/button";
-import { useEffect } from "react";
-import { refreshToken } from "./helper/api";
+import { useAuth } from "./context/AuthContext";
+
 export default function MainPage(){
   const router=useRouter();
-  useEffect(()=>{
-    const saved = localStorage.getItem("Token");
-    //@ts-ignore
-    if(saved)window.__accessToken = saved;
-    else refreshToken();
-  },[])
+  const token = useAuth();
   function check(){
-    //@ts-ignore
-    const token = window.__accessToken;
     if(!token){
       router.push('/signin');
       return ;

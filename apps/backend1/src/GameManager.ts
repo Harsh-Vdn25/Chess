@@ -27,7 +27,7 @@ export class GameManager{
             const x= data.toString();
             const message = JSON.parse(x);
             if(message.type === INIT_GAME){
-                 const userId = Number(await verifyToken(token,process.env.ACCESS_SECRET !));
+                 const userId = Number(await verifyToken(token,process.env.AUTH_SECRET !));
                  if(!userId){
                     return sendMessage({type:TOKEN_ERROR,payload:{message:"unable to retrive the token .Login again"}},socket);
                  }

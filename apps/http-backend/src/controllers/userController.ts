@@ -4,20 +4,20 @@ import { hashPassword,getCred } from "../helpers/helper";
 import bcrypt from 'bcrypt';
 import { createToken, verifyToken } from "@repo/backend-common/index";
 export async function Signup(req:Request,res:Response){
-    const {username,password,firstName}=req.body;
+    const {username,password}=req.body;
     try{
         const hashedPassword = await hashPassword(password);
         if(!hashedPassword) return;
-        const response = await prisma.user.create({
+        const savedUser = await prisma.user.create({
             data:{
                 username:username,
                 password:hashedPassword
             }
         })
-        const accessToken = createToken(response.id,true,getCred("ACCESS_SECRET"));
+        const accessToken = createToken(savedUser.id,true,getCred("AUTH_SECRET"));
         return res.status(200).json({
             message:"successfully signed up",
-            username:response.username,
+            username: savedUser.username,
             token:accessToken
         });
     }catch(err){
@@ -39,7 +39,7 @@ export async function Signin(req:Request,res:Response){
         if(!isAuthorized){
             return res.status(401).json({message:"Wrong password"});
         }
-        const accessToken = await createToken(response.id,true,getCred("ACCESS_SECRET"));
+        const accessToken = await createToken(response.id,true,getCred("AUTH_SECRET"));
         const refreshToken = await createToken(response.id,false,getCred("REFRESH_SECRET"));
         
         res.cookie("refreshToken",refreshToken,{
@@ -68,8 +68,10 @@ export async function refresh(req:Request,res:Response){
         if(!userId){
             return res.status(401).json({error:"Invalid token"});
         }
-        const newAccessToken = createToken(userId,true,getCred("ACCESS_SECRET"));
-        return res.json({newAccessToken:newAccessToken});
+        const newAccessToken = createToken(userId,true,getCred("AUTH_SECRET"));
+        return res.json({
+            newAccessToken:newAccessToken
+        });
     }catch(err){
         return res.status(403).json({ error: "Invalid refresh token" });
     }
@@ -77,7 +79,6 @@ export async function refresh(req:Request,res:Response){
 
 export async function getProfile(req:Request,res:Response){
     const userId = (req as any).userId;
-    console.log(req.cookies);
     try{
         const userInfo = await prisma.user.findUnique({where:{
             id:userId

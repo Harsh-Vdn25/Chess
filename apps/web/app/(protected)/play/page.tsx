@@ -1,11 +1,10 @@
 "use client"
 import { Button } from "@repo/ui/button";
-import ChessBoard from "../Components/ChessBoard";
+import ChessBoard from "../../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import { ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
+import { ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN} from '@repo/common/config'
 import Chess from "@repo/common/chess";
-import { refreshToken } from "../helper/api";
 import { useRouter } from "next/navigation";
 
 export default  function Play(){
@@ -70,13 +69,6 @@ export default  function Play(){
                     break;
                 case ERROR:
                     alert(message.payload.message);
-                    break;
-                case TOKEN_ERROR:
-                    const token = await refreshToken();
-                    if(!token){
-                        return router.push('/signin');
-                    }
-                    window.location.reload();
                     break;
             }
         }

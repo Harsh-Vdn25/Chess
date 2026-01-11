@@ -1,4 +1,5 @@
 import { URLS } from "../config/URLConfig";
+import { useAuth } from "../context/AuthContext";
 export async function refreshToken(){
   const http_url = URLS.HTTP_URL;
     const res = await fetch(`${http_url}/api/user/refresh`,{
@@ -7,16 +8,16 @@ export async function refreshToken(){
     })
     if(!res.ok) return null;
     const data = await res.json();
-    localStorage.setItem("Token",data.newAccessToken);
-    return data.token;
+    return data;
 }
-export async function api(path: string, options:RequestInit = {},accessToken:string) {
+export async function api(path: string, options:RequestInit = {}) {
   const http_url = URLS.HTTP_URL;
+  const {token} = useAuth();
   const res = await fetch(`${http_url}/api` + path, {
     ...options,
     headers: { 
       ...(options.headers || {}),
-      "Authorization": "Bearer " + accessToken
+      "Authorization": "Bearer " + token
     },
     credentials: "include"
   });
@@ -26,7 +27,7 @@ export async function api(path: string, options:RequestInit = {},accessToken:str
     const newToken = await refreshToken();
     if (!newToken) return null;
 
-    return api(path, options,accessToken);
+    return api(path, options);
   }
 
   return res.json();
