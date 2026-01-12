@@ -6,7 +6,7 @@ import { useAuth } from "./context/AuthContext";
 
 export default function MainPage(){
   const router=useRouter();
-  const token = useAuth();
+  const {token} = useAuth();
   function check(){
     if(!token){
       router.push('/signin');
