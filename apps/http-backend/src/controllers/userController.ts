@@ -6,6 +6,10 @@ import { createToken, verifyToken } from "@repo/backend-common/index";
 export async function Signup(req:Request,res:Response){
     const {username,password}=req.body;
     try{
+        const isExisting = await prisma.user.findUnique({
+            where:{username:username}
+        })
+        if(isExisting)return res.status(400).json({message:"User with this name already exists."});
         const hashedPassword = await hashPassword(password);
         if(!hashedPassword) return;
         const savedUser = await prisma.user.create({
@@ -68,9 +72,13 @@ export async function refresh(req:Request,res:Response){
         if(!userId){
             return res.status(401).json({error:"Invalid token"});
         }
+        const userInfo = await prisma.user.findUnique({
+            where:{id:userId}
+        })
         const newAccessToken = createToken(userId,true,getCred("AUTH_SECRET"));
         return res.json({
-            newAccessToken:newAccessToken
+            token:newAccessToken,
+            username:userInfo?.username
         });
     }catch(err){
         return res.status(403).json({ error: "Invalid refresh token" });

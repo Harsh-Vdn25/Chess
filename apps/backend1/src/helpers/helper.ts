@@ -9,10 +9,6 @@ export interface messageType{
     payload:{
         color?:"white" | "black",
         message?:string,
-        winner?:{
-            userId:number
-            colour:string
-        },
         FEN?:any
     } 
 }

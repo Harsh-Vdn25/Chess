@@ -29,16 +29,17 @@ export async function startWorker(){
         if(winMessages.length > 0){
             const wins :{
                 gameId: string,
-                winner: number
+                winner: number,
+                loser: number
             }[] = winMessages.map(x=>{
                 //@ts-ignore
                 const parsed = JSON.parse(x.message.json);
                 return {
                     gameId: parsed.message.gameId,
-                    winner: parsed.message.payload.userId
+                    winner: parsed.message.payload.winnerId,
+                    loser: parsed.message.payload.loserId
                 }
             })
-            console.log(wins)
             for( const win of wins ){
                 try{
                     const winner = await prisma.verdict.create({
@@ -47,7 +48,6 @@ export async function startWorker(){
                             gameId: win.gameId
                         }
                     })
-                    console.log(winner);
                     await prisma.user.update({
                             where:{
                                 id:winner.WinnerId
@@ -57,6 +57,16 @@ export async function startWorker(){
                                     increment: 3
                                 }
                             }
+                    })
+                    await prisma.user.update({
+                        where:{
+                            id:win.loser
+                        },
+                        data:{
+                            points:{
+                                decrement: 3
+                            }
+                        }
                     })
                 }catch(err){
                     console.log(err);
