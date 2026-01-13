@@ -1,21 +1,25 @@
 "use client"
-import { useState } from "react";
-import { login } from "../../helper/helper";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const {authenticate,token,loading} = useAuth();
   async function handleLogin(e:React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage("Logging in...");
-    const resStr = await login(username,password,"signin");
-    if(!resStr){
-        return ;
-    }
-    return router.push('/');
+    const type = "signin";
+    await authenticate({username,password,type});
   }
+
+  useEffect(()=>{
+    if(!loading && token){
+      router.replace('/');
+    }
+  },[token,loading]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">

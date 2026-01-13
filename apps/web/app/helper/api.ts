@@ -7,27 +7,5 @@ export async function refreshToken(){
     })
     if(!res.ok) return null;
     const data = await res.json();
-    localStorage.setItem("Token",data.newAccessToken);
-    return data.token;
-}
-export async function api(path: string, options:RequestInit = {},accessToken:string) {
-  const http_url = URLS.HTTP_URL;
-  const res = await fetch(`${http_url}/api` + path, {
-    ...options,
-    headers: { 
-      ...(options.headers || {}),
-      "Authorization": "Bearer " + accessToken
-    },
-    credentials: "include"
-  });
-
-
-  if (res.status === 401) {
-    const newToken = await refreshToken();
-    if (!newToken) return null;
-
-    return api(path, options,accessToken);
-  }
-
-  return res.json();
+    return data;
 }

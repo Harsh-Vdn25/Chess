@@ -27,7 +27,7 @@ export class GameManager{
             const x= data.toString();
             const message = JSON.parse(x);
             if(message.type === INIT_GAME){
-                 const userId = Number(await verifyToken(token,process.env.ACCESS_SECRET !));
+                 const userId = Number(await verifyToken(token,process.env.AUTH_SECRET !));
                  if(!userId){
                     return sendMessage({type:TOKEN_ERROR,payload:{message:"unable to retrive the token .Login again"}},socket);
                  }
@@ -63,10 +63,14 @@ export class GameManager{
                            })
                            if(!saveGame){ //later here remove the users connection to avoid further errors 
                             sendMessage({type:ERROR,payload:{message:"Failed to initialize the game"}},socket);
+                            const p1 = this.pendingUser;
+                            const p2 = this.player2;
+                            this.removeUser({p1,p2});// remove the users when the failed to initialize the game
                             return ;
                            }
                            const game = new Game(this.pendingUser,this.player2,this.redisClient,saveGame.id,
                             (p1,p2,gameId)=>
+                                //using closure here to pass endGame fn so that Game class can remove the users game when done
                                 {
                                     this.endGame({p1,p2,gameId})
                                 });
@@ -87,21 +91,22 @@ export class GameManager{
             }
         })
     }
+    removeUser({p1,p2}:{
+        p1:number,
+        p2:number
+    }){
+        for(let i=users.length;i>=0;i--){
+            if(users[i]?.userId === p1 || users[i]?.userId === p2){
+                users.splice(i,1);
+            }
+        }
+    }
     endGame({p1,p2,gameId}:{
         p1:number,
         p2:number,
         gameId:string
     }){
         this.games = this.games.filter(x=>x.gameId ! = gameId);
-        for(let i=users.length-1;i>=0;i++){
-            //looping back cuz using splice while moving forward might shift the elements andsome might be ignored
-            if(users[i]?.userId === p1 || users[i]?.userId === p2){
-                users.splice(i,1);
-            }
-        }
-    }
-    //this function has to be change (try using userIds)
-    removeUser(socket:WebSocket){
-        users.filter(x=>x.socket!==socket);
+        this.removeUser({p1,p2});
     }
 }
