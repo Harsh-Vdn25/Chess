@@ -6,6 +6,7 @@ import { useSocket } from "./useSocket";
 import { ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
 import Chess from "@repo/common/chess";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 
 export default  function Play(){
     const [chess,setChess]=useState<Chess>(new Chess());
@@ -18,7 +19,7 @@ export default  function Play(){
     const [colorWon,setColorWon]=useState('');
     let socket = useSocket();
     const router = useRouter();
-
+    const {refresh} = useAuth();
     function ChangePiecePos(move:{
         from:string,
         to:string
@@ -70,8 +71,10 @@ export default  function Play(){
                 case ERROR:
                     alert(message.payload.message);
                     break;
+                //if the token expires then refresh function is called and token is refreshed
                 case TOKEN_ERROR:
-                    
+                    await refresh();
+                    break;
             }
         }
         return ()=>{

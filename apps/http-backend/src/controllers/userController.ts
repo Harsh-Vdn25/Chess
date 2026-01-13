@@ -19,6 +19,13 @@ export async function Signup(req:Request,res:Response){
             }
         })
         const accessToken = createToken(savedUser.id,true,getCred("AUTH_SECRET"));
+        const refreshToken = createToken(savedUser.id,false,getCred("REFRESH_SECRET"));
+        res.cookie("refreshToken",refreshToken,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV === "production",
+            sameSite:"lax",
+            path:"/"
+        })
         return res.status(200).json({
             message:"successfully signed up",
             username: savedUser.username,
@@ -70,11 +77,14 @@ export async function refresh(req:Request,res:Response){
     try{
         const userId =await verifyToken(token,process.env.REFRESH_SECRET !);
         if(!userId){
-            return res.status(401).json({error:"Invalid token"});
+            return res.status(401).json({error:"Invalid cookie"});
         }
         const userInfo = await prisma.user.findUnique({
             where:{id:userId}
         })
+        if(!userInfo){
+            return res.status(400).json({error:"Invalid cookie"})
+        }
         const newAccessToken = createToken(userId,true,getCred("AUTH_SECRET"));
         return res.json({
             token:newAccessToken,
@@ -98,8 +108,13 @@ export async function getProfile(req:Request,res:Response){
                 {userId2:userId}
             ]
         }})
+        const winRate = Number((userInfo.wins/(userInfo.wins + userInfo.losses))*100) || 0;
         res.status(200).json({
             username: userInfo.username,
+            Avatar: userInfo.Avatar,
+            wins: userInfo.wins,
+            losses: userInfo.losses,
+            winRate: winRate,
             points: userInfo.points,
             games: games
         });

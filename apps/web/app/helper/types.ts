@@ -6,7 +6,11 @@ export interface Game {
 }
 
 export interface ProfileType  {
-    username: string,
-    points: number,
+    username: string;
+    Avatar: string;
+    points: number;
+    wins: number;
+    losses: number;
+    winRate: number;
     games: Game[]
 }
