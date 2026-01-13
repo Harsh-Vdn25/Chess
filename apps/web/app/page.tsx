@@ -1,34 +1,37 @@
-"use client"
-import { useRouter } from "next/navigation"
-import Chessboard from './assets/chessboard1.jpeg'
+"use client";
+import { useRouter } from "next/navigation";
+import Chessboard from "./assets/chessboard1.jpeg";
 import { Button } from "../../../packages/ui/src/button";
 import { useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
 
-export default function MainPage(){
-  const router=useRouter();
-  const {token} = useAuth();
-  function check(){
-    if(!token){
-      router.push('/signin');
-      return ;
+export default function MainPage() {
+  const router = useRouter();
+  const { token, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && token) {
+      router.replace("/play");
     }
-    router.push('/play');
-  }
+  }, [token, loading]);
+
   return (
     <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
       <div className="flex gap-4">
         <div className="border-4 rounded-lg border-gray-700">
           <img
-            src={Chessboard.src ?? Chessboard} 
+            src={Chessboard.src ?? Chessboard}
             alt="chessboard"
             className="w-72"
           />
         </div>
         <div className="flex flex-col items-center gap-4">
-          <h1 className=" text-3xl font-semibold text-white">Welcome to Chess</h1>
-          <Button children="Play Chess" onClick={()=>check()}/>
+          <h1 className=" text-3xl font-semibold text-white">
+            Welcome to Chess
+          </h1>
+          <Button children="Play Chess" onClick={() => router.push("/signin")} />
         </div>
       </div>
     </div>
-  )
+  );
 }

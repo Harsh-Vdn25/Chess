@@ -50,7 +50,7 @@ export async function Signin(req:Request,res:Response){
             httpOnly:true,
             secure:process.env.NODE_ENV === "production",
             sameSite:"lax",
-            path:"/api/user/refresh"
+            path:"/"
         });
 
         return res.status(200).json({

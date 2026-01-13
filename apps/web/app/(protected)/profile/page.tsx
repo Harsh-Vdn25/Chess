@@ -1,23 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
-import { api } from "../../helper/api";
+import { SetStateAction, useEffect, useState } from "react";
 import { ProfileType } from "../../helper/types";
-import { useRouter } from "next/navigation";
 import { DropDown } from "../../Components/DropDown";
 import { useAuth } from "../../context/AuthContext";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
+  const {api} = useAuth();
   useEffect(() => {
     async function fetchProfile() {
       await api("/user/profile", { method: "GET" })
-        .then((data) => {
-          console.log(data);
+        .then((data: SetStateAction<ProfileType | null>) => {
           setProfile(data);
           setLoading(false);
         })
-        .catch((err) => console.log(err));
+        .catch((err: any) => console.log(err));
     }
     fetchProfile();
   }, []);

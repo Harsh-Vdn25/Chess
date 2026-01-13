@@ -25,6 +25,7 @@ interface AuthContextType {
     password,
     type,
   }: AuthenticateType) => Promise<void>;
+  api:any;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -34,13 +35,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function init() {
-      try{
+      try {
         const res = await refreshToken();
         if (res) {
           setUser(res.username);
-          setToken(res.accessToken);
+          setToken(res.token);
         }
-      }finally{
+      } finally {
         setLoading(false);
       }
     }
@@ -75,15 +76,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const refreshed = await refreshToken();
       if (refreshed) {
         setUser(refreshed.username);
-        setToken(refreshed.accessToken);
+        setToken(refreshed.token);
       }
     } catch (err) {
       console.log(err);
     }
   }
 
+  async function api(path: string, options: RequestInit = {}) {
+    const http_url = URLS.HTTP_URL;
+    const res = await fetch(`${http_url}/api` + path, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: "Bearer " + token,
+      },
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      const refreshed = await refreshToken();
+      if (!refreshed.ok) return null;
+      setToken(refreshed.token);
+      setUser(refreshed.username);
+      return api(path, options);
+    }
+    return res.json();
+  }
+
   return (
-    <AuthContext.Provider value={{ token, loading, user, authenticate }}>
+    <AuthContext.Provider value={{ token, loading, user, authenticate,api }}>
       {children}
     </AuthContext.Provider>
   );

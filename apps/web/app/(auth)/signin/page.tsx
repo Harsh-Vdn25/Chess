@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 export default function Login() {
@@ -7,17 +7,19 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
-  const {authenticate,token} = useAuth();
+  const {authenticate,token,loading} = useAuth();
   async function handleLogin(e:React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage("Logging in...");
     const type = "signin";
     await authenticate({username,password,type});
-    if(!token){
-        return ;
-    }
-    return router.push('/');
   }
+
+  useEffect(()=>{
+    if(!loading && token){
+      router.replace('/');
+    }
+  },[token,loading]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">

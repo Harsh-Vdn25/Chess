@@ -3,7 +3,7 @@ import { URLS } from "../../config/URLConfig";
 import { useAuth } from "../../context/AuthContext";
 export function useSocket(){
    const [socket,setSocket] = useState<WebSocket|null>(null);
-   const {token} = useAuth();
+   const {token,loading} = useAuth();
    useEffect(()=>{
     const ws_url=URLS.WS_URL;
         if(!ws_url){
@@ -15,6 +15,6 @@ export function useSocket(){
             ws.close();
             setSocket(null)
         }
-   },[]);
+   },[token]);
     return socket;
 }
