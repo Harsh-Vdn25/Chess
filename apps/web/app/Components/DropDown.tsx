@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 import { Game } from "../helper/types";
-import { api } from "../helper/api";
 interface DropDownProps{
     game: Game,
     index: number
@@ -17,7 +16,7 @@ interface DropDownProps{
         onClick={() => getGameInfo(game.id)}
         className="w-full flex justify-between items-center
                    px-3 py-2 hover:bg-slate-600 transition"
-      >
+      key={index}>
         <div className="text-left text-sm">
           <p className="font-medium">Game</p>
           <p className="text-gray-400 text-xs">
@@ -30,7 +29,6 @@ interface DropDownProps{
         </span>
       </button>
 
-      {/* Body */}
       {open && (
         <div className="px-3 py-2 border-t border-slate-600 text-sm text-gray-300">
           Game ID: {game.id.slice(0, 8)}

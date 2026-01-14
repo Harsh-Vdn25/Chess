@@ -55,6 +55,9 @@ export async function startWorker(){
                             data:{
                                 points:{
                                     increment: 3
+                                },
+                                wins:{
+                                    increment: 1
                                 }
                             }
                     })
@@ -65,6 +68,9 @@ export async function startWorker(){
                         data:{
                             points:{
                                 decrement: 3
+                            },
+                            losses:{
+                                increment: 1
                             }
                         }
                     })

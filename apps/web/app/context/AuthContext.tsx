@@ -26,6 +26,7 @@ interface AuthContextType {
     type,
   }: AuthenticateType) => Promise<void>;
   api:any;
+  refresh:()=>Promise<void>;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await refreshToken();
         if (res) {
+          console.log(res);
           setUser(res.username);
           setToken(res.token);
         }
@@ -73,8 +75,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         toast.error("Authentication failed");
         return;
       }
+      console.log(data);
       const refreshed = await refreshToken();
       if (refreshed) {
+        console.log(refreshed);
         setUser(refreshed.username);
         setToken(refreshed.token);
       }
@@ -104,8 +108,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return res.json();
   }
 
+  async function refresh(){
+    const res = await refreshToken(); 
+    if(res.ok){
+      setToken(res.token);
+      setUser(res.username);
+    }
+  }
   return (
-    <AuthContext.Provider value={{ token, loading, user, authenticate,api }}>
+    <AuthContext.Provider value={{ token, loading, user, authenticate, api, refresh }}>
       {children}
     </AuthContext.Provider>
   );
