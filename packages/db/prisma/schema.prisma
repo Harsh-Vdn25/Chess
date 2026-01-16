@@ -16,10 +16,11 @@ model User{
   points          Int         @default(0)
   createdAt       DateTime    @default(now())
   wins            Int         @default(0)
-  losses            Int         @default(0)
+  losses          Int         @default(0)
   gameAsUser1     Game[]      @relation("user1")
   gameAsUser2     Game[]      @relation("user2")
-  winsrel         Verdict[]
+  winsrel         Verdict[]   @relation("win")
+  losrel          Verdict[]   @relation("lose")
 }
 
 model Game{
@@ -44,7 +45,9 @@ model Move{
 model Verdict{
   id             Int          @id @default(autoincrement())
   gameId         String       @unique
-  WinnerId       Int       
-  winner         User         @relation(fields: [WinnerId],references: [id])
+  winnerId       Int       
+  loserId        Int
+  winner         User         @relation("win",fields: [winnerId],references: [id])
+  loser          User         @relation("lose",fields: [loserId],references: [id])
   gameWon        Game         @relation(fields: [gameId],references: [id])
 }

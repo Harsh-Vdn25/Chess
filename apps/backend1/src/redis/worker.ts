@@ -44,13 +44,14 @@ export async function startWorker(){
                 try{
                     const winner = await prisma.verdict.create({
                         data:{
-                            WinnerId: win.winner,
+                            winnerId: win.winner,
+                            loserId: win.loser,
                             gameId: win.gameId
                         }
                     })
                     await prisma.user.update({
                             where:{
-                                id:winner.WinnerId
+                                id:winner.winnerId
                             },
                             data:{
                                 points:{
@@ -63,7 +64,7 @@ export async function startWorker(){
                     })
                     await prisma.user.update({
                         where:{
-                            id:win.loser
+                            id:winner.loserId
                         },
                         data:{
                             points:{

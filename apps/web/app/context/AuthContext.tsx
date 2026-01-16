@@ -25,7 +25,7 @@ interface AuthContextType {
     password,
     type,
   }: AuthenticateType) => Promise<void>;
-  api:any;
+  api:(path:string,options:RequestInit)=>Promise<any>;
   refresh:()=>Promise<void>;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);

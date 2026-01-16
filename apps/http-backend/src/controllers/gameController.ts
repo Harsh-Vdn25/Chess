@@ -10,9 +10,27 @@ export async function gameVerdict(req:Request,res:Response){
             where:{gameId:gameId}
         })
         if(!gameVerdict) return res.status(404).json({messsage:"No game with this gameId exists"})
+        
+        const [winner,loser] = await Promise.all([
+            await prisma.user.findUnique({
+                where:{id : gameVerdict.winnerId}
+            }),
+            await prisma.user.findUnique({
+                where:{
+                    id: gameVerdict.loserId
+                }
+            })
+        ])
         res.status(200).json({
-            winner:gameVerdict.WinnerId
-        });
+            winner: {
+                username: winner?.username,
+                points: winner?.points
+            },
+            loser: {
+                username: loser?.username,
+                points: loser?.points
+            }
+        })
     }catch(err){
         console.error(err);
         res.status(500).json({ message: "Internal server error" });
