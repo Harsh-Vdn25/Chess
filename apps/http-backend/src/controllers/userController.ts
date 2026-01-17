@@ -22,7 +22,7 @@ export async function Signup(req:Request,res:Response){
         const refreshToken = createToken(savedUser.id,false,getCred("REFRESH_SECRET"));
         res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
-            secure:process.env.NODE_ENV === "production",
+            secure:false,
             sameSite:"lax",
             path:"/"
         })
@@ -55,7 +55,7 @@ export async function Signin(req:Request,res:Response){
         
         res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
-            secure:process.env.NODE_ENV === "production",
+            secure:false,
             sameSite:"lax",
             path:"/"
         });
@@ -72,6 +72,7 @@ export async function Signin(req:Request,res:Response){
 
 export async function refresh(req:Request,res:Response){
     const token = req.cookies.refreshToken;
+    console.log(req.cookies);
     if(!token) return res.status(401).json({error:"No refresh token"});
 
     try{

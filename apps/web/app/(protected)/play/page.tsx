@@ -3,10 +3,11 @@ import { Button } from "@repo/ui/button";
 import ChessBoard from "../../Components/ChessBoard";
 import { useEffect, useState } from "react";
 import { useSocket } from "./useSocket";
-import { ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config'
+import { ERROR, GAME_OVER, INIT_GAME,MOVE, REJOIN, TOKEN_ERROR, WRONG_MOVE} from '@repo/common/config'
 import Chess from "@repo/common/chess";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default  function Play(){
     const [chess,setChess]=useState<Chess>(new Chess());
@@ -54,6 +55,10 @@ export default  function Play(){
                     move = message.payload.move;
                     ChangePiecePos(move);
                     break;
+                case WRONG_MOVE:
+                    const notify = message.payload.message;
+                    toast.error(`${notify}`);
+                    break;
                 case GAME_OVER:
                     move = message.payload.move;
                     const Winner = message.payload.winner;
@@ -95,14 +100,14 @@ export default  function Play(){
     
     return (
         <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
-            <div className="flex">
+            <div className="flex gap-2">
                 <ChessBoard board={board} socket={socket} 
                     color={color} gameId={gameId} userId={userId}/>
                 <div className="bg-gray-700">
                 {
                     isStarted?(
                         isGameOver?(
-                            <h1 className="text-white">{colorWon}</h1>
+                            <h1 className="text-white">{colorWon} Won</h1>
                         ):(
                             <h1 className="text-white">Your pieces are {color}</h1>
                         )

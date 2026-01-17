@@ -106,7 +106,7 @@ export class GameManager{
         p2:number,
         gameId:string
     }){
-        this.games = this.games.filter(x=>x.gameId ! = gameId);
+        this.games = this.games.filter(x=>x.gameId !== gameId);
         this.removeUser({p1,p2});
     }
 }

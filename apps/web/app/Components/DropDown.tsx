@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Game } from "../helper/types";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 interface DropDownProps {
   game: Game;
@@ -28,6 +29,10 @@ export const DropDown = ({ game }: DropDownProps) => {
         const res = await api(`/game/verdict?gameId=${game.id}`, {
           method: "GET",
         });
+        if(!res.success){
+          toast.error(`${res.message}`);
+          return ;
+        }
         setVerdict(res);
       } finally {
         setLoading(false);
@@ -67,29 +72,48 @@ export const DropDown = ({ game }: DropDownProps) => {
 
           {verdict && (
             <>
-              <div className="flex justify-between items-center bg-green-900/30 rounded-md px-3 py-2">
-                <div>
-                  <p className="text-green-400 font-semibold">Winner</p>
-                  <p>{verdict.winner.username}</p>
+              <div className="flex w-full gap-4 ">
+                <div className="flex w-1/2 justify-between items-center bg-green-900/30 shadow-sm shadow-gray-900 rounded-md px-1 py-1">
+                  <div>
+                    <p className="text-green-400  font-semibold">Winner</p>
+                    <p>{verdict.winner.username}</p>
+                  </div>
+                  <p className="text-green-400 font-bold">
+                    +{verdict.winner.points}
+                  </p>
                 </div>
-                <p className="text-green-400 font-bold">
-                  +{verdict.winner.points}
-                </p>
+
+                <div className="flex w-1/2 justify-between items-center bg-red-900/30 shadow-sm shadow-gray-900  rounded-md px-3 py-1">
+                  <div>
+                    <p className="text-red-400 font-semibold">Loser</p>
+                    <p>{verdict.loser.username}</p>
+                  </div>
+                  <p className="text-red-400 font-bold">
+                    {verdict.loser.points}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex justify-between items-center bg-red-900/30 rounded-md px-3 py-2">
-                <div>
-                  <p className="text-red-400 font-semibold">Loser</p>
-                  <p>{verdict.loser.username}</p>
-                </div>
-                <p className="text-red-400 font-bold">
-                  {verdict.loser.points}
+              <div className="flex justify-between">
+                <p className="text-xs text-gray-400">
+                  Game ID: {game.id.slice(0, 8)}
                 </p>
+                <button
+                  className="
+                    text-xs font-medium
+                  text-gray-300
+                    px-2 py-1
+                    rounded
+                    border border-slate-600
+                    hover:text-green-400
+                    hover:border-green-400
+                    transition
+                    "
+                  onClick={() => console.log("later call moves")}
+                >
+                  View Moves
+                </button>
               </div>
-
-              <p className="text-xs text-gray-400">
-                Game ID: {game.id.slice(0, 8)}
-              </p>
             </>
           )}
         </div>

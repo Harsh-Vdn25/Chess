@@ -6,7 +6,7 @@ export const createToken = (userId: number, isAccess:boolean,secret:string): str
     const token = jwt.sign(
         {id : userId},
         secret,
-        isAccess?{ expiresIn:"3m" }:{expiresIn:"30d"}
+        isAccess?{ expiresIn:"15m" }:{expiresIn:"30d"}
     );
     return token;
 };

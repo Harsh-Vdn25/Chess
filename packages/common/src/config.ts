@@ -5,3 +5,4 @@ export const GAME_OVER = 'game_over';
 export const REJOIN = 'rejoin';
 export const TOKEN_ERROR = 'token_error'
 export const CLOSE = 'close';
+export const WRONG_MOVE = 'wrong_move';

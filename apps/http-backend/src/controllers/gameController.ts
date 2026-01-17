@@ -9,8 +9,10 @@ export async function gameVerdict(req:Request,res:Response){
         const gameVerdict = await prisma.verdict.findUnique({
             where:{gameId:gameId}
         })
-        if(!gameVerdict) return res.status(404).json({messsage:"No game with this gameId exists"})
-        
+        if(!gameVerdict) return res.status(404).json({
+            success: false,
+            message: "No game with this gameId exists"
+        })
         const [winner,loser] = await Promise.all([
             await prisma.user.findUnique({
                 where:{id : gameVerdict.winnerId}
@@ -22,6 +24,7 @@ export async function gameVerdict(req:Request,res:Response){
             })
         ])
         res.status(200).json({
+            success: true,
             winner: {
                 username: winner?.username,
                 points: winner?.points

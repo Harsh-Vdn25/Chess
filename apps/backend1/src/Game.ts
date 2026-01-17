@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import Chess from "@repo/common/chess";
-import { MOVE,ERROR,INIT_GAME, GAME_OVER } from "@repo/common/config";
+import { MOVE,ERROR,INIT_GAME, GAME_OVER, WRONG_MOVE } from "@repo/common/config";
 import { checkMove, sendMessage } from "./helpers/helper";
 import { clientType } from "./redis/redisClient";
 import { users } from "./helpers/state";
@@ -73,7 +73,7 @@ export class Game{
             let message;
             if(!checkMove(move.from) && !checkMove(move.to)){
                 sendMessage({
-                    type:ERROR,
+                    type:WRONG_MOVE,
                     payload:{message:"Invalid move"}
                 },socket);
                 return;
