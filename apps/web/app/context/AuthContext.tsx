@@ -10,6 +10,7 @@ import { refreshToken } from "../helper/api";
 import { inputCheck } from "../helper/inputCheck";
 import toast from "react-hot-toast";
 import { URLS } from "../config/URLConfig";
+import { useRouter } from "next/navigation";
 
 interface AuthenticateType {
   username: string;
@@ -25,8 +26,9 @@ interface AuthContextType {
     password,
     type,
   }: AuthenticateType) => Promise<void>;
-  api:(path:string,options:RequestInit)=>Promise<any>;
-  refresh:()=>Promise<void>;
+  api: (path: string, options: RequestInit) => Promise<any>;
+  refresh: () => Promise<void>;
+  logout: ()=> Promise<void>;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState("");
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   useEffect(() => {
     async function init() {
       try {
@@ -108,15 +111,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return res.json();
   }
 
-  async function refresh(){
-    const res = await refreshToken(); 
-    if(res.ok){
+  async function refresh() {
+    const res = await refreshToken();
+    if (res.ok) {
       setToken(res.token);
       setUser(res.username);
     }
   }
+
+  async function logout() {
+    try {
+      await fetch(`${URLS.HTTP_URL}/api/user/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log("Failed to logout", err);
+    }finally{
+      setToken("");
+      router.replace("/signin")
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ token, loading, user, authenticate, api, refresh }}>
+    <AuthContext.Provider
+      value={{ token, loading, user, authenticate, api, refresh,logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
