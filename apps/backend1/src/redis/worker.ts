@@ -17,9 +17,10 @@ export async function startWorker(){
             const moves = gameMessages.map(x=>{
                 //@ts-ignore
                 const parsed = JSON.parse(x.message.json);
+                console.log("parsed move part",parsed);
                 return {
-                    gameId: parsed.message.gameId,
-                    move:JSON.stringify(parsed.message.payload.move)
+                    gameId: parsed.gameId,
+                    move:JSON.stringify(parsed.move)
                 }
             })
             await prisma.move.createMany({data:moves})
@@ -35,9 +36,9 @@ export async function startWorker(){
                 //@ts-ignore
                 const parsed = JSON.parse(x.message.json);
                 return {
-                    gameId: parsed.message.gameId,
-                    winner: parsed.message.payload.winnerId,
-                    loser: parsed.message.payload.loserId
+                    gameId: parsed.gameId,
+                    winner: parsed.winnerId,
+                    loser: parsed.loserId
                 }
             })
             for( const win of wins ){
