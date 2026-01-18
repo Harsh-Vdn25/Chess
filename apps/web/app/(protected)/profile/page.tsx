@@ -33,7 +33,7 @@ export default function ProfilePage() {
     return <p className="text-center text-red-500">No profile found</p>;
 
   return (
-    <div className="min-h-screen bg-slate-900 flex justify-center items-center p-6 text-gray-100">
+    <div className="w-full h-full bg-slate-900 flex justify-center items-center p-6 text-gray-100">
       <div className="w-full max-w-4xl bg-gray-600 p-6 grid grid-rows-2 rounded-md shadow-lg">
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-2">

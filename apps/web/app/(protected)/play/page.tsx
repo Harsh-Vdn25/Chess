@@ -108,8 +108,8 @@ export default function Play() {
   }
 
   return (
-    <div className="w-screen h-screen bg-gray-800 flex justify-center items-center">
-      <div className="flex gap-2">
+    <div className="w-full h-full bg-gray-800 flex justify-center items-center">
+      <div className="grid grid-cols-[3fr_1fr] gap-2 ">
         <ChessBoard
           board={board}
           socket={socket}
@@ -117,14 +117,14 @@ export default function Play() {
           gameId={gameId}
           userId={userId}
         />
-        <div className="bg-gray-700">
+        <div className=" w-full flex justify-center py-2 bg-gray-700 ">
           {isStarted ? (
             isGameOver ? (
-              <h1 className="text-white">
+              <h1 className="text-white ">
                 {color === colorWon ? "you won the game" : "you lost"}
               </h1>
             ) : (
-              <h1 className="text-white">Your pieces are {color}</h1>
+              <h1 className="text-white ">Your pieces are {color}</h1>
             )
           ) : (
             <div>
