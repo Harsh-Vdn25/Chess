@@ -72,7 +72,6 @@ export async function Signin(req:Request,res:Response){
 
 export async function refresh(req:Request,res:Response){
     const token = req.cookies.refreshToken;
-    console.log(req.cookies);
     if(!token) return res.status(401).json({error:"No refresh token"});
 
     try{
@@ -122,4 +121,14 @@ export async function getProfile(req:Request,res:Response){
     }catch(err){
         res.status(500).json({error:err})
     }
+}
+
+export function logout(req:Request,res:Response){
+    res.clearCookie("refreshToken",{
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/"
+    })
+    res.status(200).json({message:"Logged out"});
 }

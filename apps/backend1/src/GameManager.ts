@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 import { Game } from './Game';
 import {ERROR, INIT_GAME, MOVE, REJOIN, TOKEN_ERROR} from '@repo/common/config';
 import { clientType } from './redis/redisClient';
-import { prisma } from '@repo/db/client';
+import { nanoid } from 'nanoid';
 import { verifyToken } from '@repo/backend-common/index';
 import { users,type usersType} from './helpers/state';
 import { sendMessage } from './helpers/helper';
@@ -54,21 +54,8 @@ export class GameManager{
                            return sendMessage({type:ERROR,payload:{message:"You cant play two games simultaneously"}},socket)
                        }
                        this.player2 = userId;
-                       try{
-                           const saveGame = await prisma.game.create({
-                               data:{
-                                   userId1:this.pendingUser,
-                                   userId2:this.player2
-                               }
-                           })
-                           if(!saveGame){ //later here remove the users connection to avoid further errors 
-                            sendMessage({type:ERROR,payload:{message:"Failed to initialize the game"}},socket);
-                            const p1 = this.pendingUser;
-                            const p2 = this.player2;
-                            this.removeUser({p1,p2});// remove the users when the failed to initialize the game
-                            return ;
-                           }
-                           const game = new Game(this.pendingUser,this.player2,this.redisClient,saveGame.id,
+                       const gameId = nanoid(10);
+                       const game = new Game(this.pendingUser,this.player2,this.redisClient,gameId,
                             (p1,p2,gameId)=>
                                 //using closure here to pass endGame fn so that Game class can remove the users game when done
                                 {
@@ -77,10 +64,7 @@ export class GameManager{
                            this.games.push(game);
                            this.pendingUser = -1;
                            this.player2 = -1;
-                       }catch(err){
-                           console.log(err);
-                           return;
-                       }
+                           await game.init();
                     }
                  }
             }
