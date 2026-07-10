@@ -13,6 +13,7 @@ async function main(){
         const queryParams = new URLSearchParams(url?.split("?")[1]);
         const token = queryParams.get("token");
         if(!token){
+            socket.close();
             return ;
         }
         gamemanager.handleMessage(socket,token);
