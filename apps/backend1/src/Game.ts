@@ -20,20 +20,20 @@ export class Game {
   public player2: WebSocket;
   public player1Id: number;
   public player2Id: number;
-  public gameId: string;
-  private gameIdDB: string = "";
+  public gameId: string;//identify game in games array
+  private gameIdDB: string = "";//use it to push moves of a specific gameId to streams to update DB
   public chess: Chess;
   private redisClient: clientType;
   private onGameOver: onGameOver;
   constructor(
-    player1: number,
-    player2: number,
+    player1Id: number,
+    player2Id: number,
     redisClient: clientType,
     gameId: string,
     callback: onGameOver,
   ) {
-    this.player1Id = player1;
-    this.player2Id = player2;
+    this.player1Id = player1Id;
+    this.player2Id = player2Id;
     this.gameId = gameId;
     this.chess = new Chess();
     this.redisClient = redisClient;
@@ -41,7 +41,18 @@ export class Game {
     this.getPlayerSockets();
   }
   public async init() {
-    await this.saveGame();
+    const success = await this.saveGame();
+    if(!success){
+      //tell both players something went wrong and remove the game
+      sendMessage({type: ERROR,payload:{message:"Failed to start the game, please try again"}},this.player1);
+      sendMessage({type: ERROR,payload:{message:"Failed to start the game, please try again"}},this.player2);
+
+      users.filter(x=>x.userId!==this.player1Id && x.userId !==this.player2Id);
+
+      // remove game from this.games
+      this.onGameOver(this.player1Id,this.player2Id,this.gameId);
+      return;
+    }
     this.initGame();
   }
   //this one saves the game to the DB
@@ -71,12 +82,13 @@ export class Game {
           this.player1,
         );
         this.onGameOver(this.player1Id, this.player2Id, this.gameId);
-        return;
+        return false;
       }
       this.gameIdDB = saveGame.id;
-      console.log(this.gameIdDB);
+      return true;
     } catch (err) {
       console.log(err);
+      return false;
     }
   }
 

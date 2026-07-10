@@ -67,7 +67,7 @@ export default function ProfilePage() {
           {profile.games.length > 0 ? (
             <div className="space-y-3">
               {profile.games.map((game, i) => (
-                <DropDown key={i} game={game} index={i} />
+                <DropDown key={i} game={game} />
               ))}
             </div>
           ) : (
